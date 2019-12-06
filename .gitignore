@@ -1,0 +1,4 @@
+# Ignoring binaries
+*.exe
+*.so
+*.out
