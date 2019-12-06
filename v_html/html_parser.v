@@ -37,9 +37,15 @@ pub struct Parser {
 		tags []Tag
 }
 
+fn (parser mut Parser) builder_str() string {
+	temp := parser.lexycal_attributes.lexeme_builder.str()
+	parser.lexycal_attributes.lexeme_builder.free()
+	parser.lexycal_attributes.lexeme_builder.write(temp)
+	return temp
+}
+
 pub fn (parser mut Parser) verify_end_comment(remove bool) bool {
-	mut lexeme_builder := parser.lexycal_attributes.lexeme_builder
-	lexeme := lexeme_builder.str()
+	lexeme := parser.builder_str()
     last := lexeme[lexeme.len - 1]
     penultimate := lexeme[lexeme.len - 2]
     mut is_end_comment := false
@@ -47,7 +53,7 @@ pub fn (parser mut Parser) verify_end_comment(remove bool) bool {
         is_end_comment = true
     }
     if is_end_comment && remove {
-        lexeme_builder.len -= 2
+        parser.lexycal_attributes.lexeme_builder.len -= 2
     }
     return is_end_comment
 }
@@ -66,60 +72,62 @@ pub fn (parser mut Parser) split_parse(data string) {
 		if parser.lexycal_attributes.open_comment {
 			if word == 62 { //close tag '>
 				if parser.lexycal_attributes.open_comment && parser.verify_end_comment(true) {
-					//println(parser.lexycal_attributes.lexeme_builder.str())
-					parser.lexycal_attributes.lexeme_builder = strings.new_builder(1) //strings.Builder{}
+					//println(parser.builder_str())
+					parser.lexycal_attributes.lexeme_builder.free() //strings.Builder{}
 					parser.lexycal_attributes.open_comment = false
 					parser.lexycal_attributes.open_tag = false
 				} else {
-					parser.lexycal_attributes.lexeme_builder.write(word.str())
+					parser.lexycal_attributes.lexeme_builder.write_b(word.str())
 				}
 			}
 		} else if parser.lexycal_attributes.open_string > 0 {
 			if parser.lexycal_attributes.open_string == string_code {
 				parser.lexycal_attributes.open_string = 0
-				temp_lexeme := parser.lexycal_attributes.lexeme_builder.str()
+				temp_lexeme := parser.builder_str()
 				if parser.lexycal_attributes.current_tag.last_attribute != "" {
 					parser.lexycal_attributes.current_tag.attributes[parser.lexycal_attributes.current_tag.last_attribute] = temp_lexeme
 				}
-				parser.lexycal_attributes.lexeme_builder = strings.new_builder(1)
+				parser.lexycal_attributes.lexeme_builder.free()
 			} else {
-				parser.lexycal_attributes.lexeme_builder.write(word.str())
+				parser.lexycal_attributes.lexeme_builder.write_b(word.str())
 			}
 		} else if parser.lexycal_attributes.open_tag {
 			if parser.lexycal_attributes.lexeme_builder.len == 0 && is_quotation {
 				parser.lexycal_attributes.open_string = string_code
 			} else if word == 62 { // close tag >
-				parser.lexycal_attributes.current_tag.attributes[parser.lexycal_attributes.lexeme_builder.str()] = ""
+				parser.lexycal_attributes.current_tag.attributes[parser.builder_str()] = ""
 				parser.lexycal_attributes.open_tag = false
-				parser.lexycal_attributes.lexeme_builder = strings.new_builder(1)
+				parser.lexycal_attributes.lexeme_builder.free()
 			} else if word != 9 && word != 32 && word != 61 { // Tab, space and =
-				parser.lexycal_attributes.lexeme_builder.write(word.str())
-				//println(parser.lexycal_attributes.lexeme_builder.str() + " - " + parser.lexycal_attributes.lexeme_builder.len.str())
+				parser.lexycal_attributes.lexeme_builder.write_b(word.str())
+				println(word.str())
+				//println(parser.builder_str() + " - " + parser.lexycal_attributes.lexeme_builder.len.str())
 			} else {
 				if parser.lexycal_attributes.current_tag.name == "" {
-					parser.lexycal_attributes.current_tag.name = parser.lexycal_attributes.lexeme_builder.str()
+					parser.lexycal_attributes.current_tag.name = parser.builder_str()
 				} else {
-					parser.lexycal_attributes.current_tag.attributes[parser.lexycal_attributes.lexeme_builder.str()] = ""
+					parser.lexycal_attributes.current_tag.attributes[parser.builder_str()] = ""
 					parser.lexycal_attributes.current_tag.last_attribute = "" 
 					if word == 61 { // if was a =
-						parser.lexycal_attributes.current_tag.last_attribute = parser.lexycal_attributes.lexeme_builder.str()
+						parser.lexycal_attributes.current_tag.last_attribute = parser.builder_str()
 					}
 				}
-				parser.lexycal_attributes.lexeme_builder = strings.new_builder(1) //strings.Builder{}
+				parser.lexycal_attributes.lexeme_builder.free() //strings.Builder{}
 			}
-			if parser.lexycal_attributes.lexeme_builder.str() == "!--" { parser.lexycal_attributes.open_comment = true }
+			if parser.builder_str() == "!--" { parser.lexycal_attributes.open_comment = true }
 		} else if word == 60 { //open tag '<'
 			mut tags := []Tag//parser.tags
 			if parser.lexycal_attributes.lexeme_builder.len > 1 {
-				tags << Tag{content: parser.lexycal_attributes.lexeme_builder.str()}
+				tags << Tag{content: parser.builder_str()}
 			}
-			parser.lexycal_attributes.lexeme_builder = strings.new_builder(1)
+			parser.lexycal_attributes.lexeme_builder.free()
 			parser.lexycal_attributes.current_tag = Tag{}
 			tags << parser.lexycal_attributes.current_tag
 			parser.lexycal_attributes.open_tag = true
 		} else {
-			parser.lexycal_attributes.lexeme_builder.write(word.str())
+			parser.lexycal_attributes.lexeme_builder.write_b(word.str())
 		}
+		//println(parser.builder_str())
 	}
 }
 
