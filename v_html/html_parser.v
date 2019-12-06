@@ -24,6 +24,7 @@ struct LexycalAttributes {
 		open_string int = 0
 		open_comment bool = false
 		is_attribute bool = false
+		opened_code_type string = ""
 		line_count int = 0
 		lexeme_builder strings.Builder
 		code_tags map[string]bool = {"script": true, "style": true}
@@ -70,7 +71,9 @@ pub fn (parser mut Parser) split_parse(data string) {
 			39 { 2 } //'
 			else { 0 }
 		}
-		if parser.lexycal_attributes.open_comment {
+		if parser.lexycal_attributes.open_code {
+			//here will verify all needed to know if open_code finishes and string in code
+		} else if parser.lexycal_attributes.open_comment {
 			if word == 62 { //close tag '>
 				if parser.lexycal_attributes.open_comment && parser.verify_end_comment(true) {
 					//println(parser.builder_str())
@@ -106,6 +109,10 @@ pub fn (parser mut Parser) split_parse(data string) {
 			} else {
 				if parser.lexycal_attributes.current_tag.name == "" {
 					parser.lexycal_attributes.current_tag.name = parser.builder_str()
+					if parser.lexycal_attributes.code_tags[parser.lexycal_attributes.current_tag.name] {
+						parser.lexycal_attributes.open_code = true
+						parser.lexycal_attributes.opened_code_type = parser.lexycal_attributes.current_tag.name
+					} 
 				} else {
 					parser.lexycal_attributes.current_tag.attributes[parser.builder_str()] = ""
 					parser.lexycal_attributes.current_tag.last_attribute = "" 
