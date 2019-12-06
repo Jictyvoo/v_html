@@ -6,3 +6,4 @@
 
 # Ignoring test files
 *html
+*.log

@@ -1,5 +1,6 @@
 module main
 //import http
+import os
 import v_html
 fn main() {
 	/*println("Fetching myanimelist data")
@@ -10,7 +11,8 @@ fn main() {
 	
 	println("Finalized fetching, start parsing")
 	parser.parse_html(resp.text, false)*/
-	mut parser := v_html.Parser{}
+	d_file := os.create("debug.log") or {eprintln('failed to read the file') return}
+	mut parser := v_html.Parser{debug_file: d_file}
 	parser.parse_html("myanime_test.html", true)
 	
 }

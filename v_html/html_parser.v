@@ -35,6 +35,7 @@ pub struct Parser {
 		lexycal_attributes LexycalAttributes = LexycalAttributes{lexeme_builder: strings.new_builder(1)}
 		filename string = "direct-parse"
 		tags []Tag
+		debug_file os.File
 }
 
 fn (parser mut Parser) builder_str() string {
@@ -77,7 +78,7 @@ pub fn (parser mut Parser) split_parse(data string) {
 					parser.lexycal_attributes.open_comment = false
 					parser.lexycal_attributes.open_tag = false
 				} else {
-					parser.lexycal_attributes.lexeme_builder.write_b(word.str())
+					parser.lexycal_attributes.lexeme_builder.write_b(word)
 				}
 			}
 		} else if parser.lexycal_attributes.open_string > 0 {
@@ -89,18 +90,18 @@ pub fn (parser mut Parser) split_parse(data string) {
 				}
 				parser.lexycal_attributes.lexeme_builder.free()
 			} else {
-				parser.lexycal_attributes.lexeme_builder.write_b(word.str())
+				parser.lexycal_attributes.lexeme_builder.write_b(word)
 			}
 		} else if parser.lexycal_attributes.open_tag {
 			if parser.lexycal_attributes.lexeme_builder.len == 0 && is_quotation {
 				parser.lexycal_attributes.open_string = string_code
 			} else if word == 62 { // close tag >
+				parser.debug_file.writeln(parser.builder_str())
 				parser.lexycal_attributes.current_tag.attributes[parser.builder_str()] = ""
 				parser.lexycal_attributes.open_tag = false
 				parser.lexycal_attributes.lexeme_builder.free()
 			} else if word != 9 && word != 32 && word != 61 { // Tab, space and =
-				parser.lexycal_attributes.lexeme_builder.write_b(word.str())
-				println(word.str())
+				parser.lexycal_attributes.lexeme_builder.write_b(word)
 				//println(parser.builder_str() + " - " + parser.lexycal_attributes.lexeme_builder.len.str())
 			} else {
 				if parser.lexycal_attributes.current_tag.name == "" {
@@ -125,7 +126,7 @@ pub fn (parser mut Parser) split_parse(data string) {
 			tags << parser.lexycal_attributes.current_tag
 			parser.lexycal_attributes.open_tag = true
 		} else {
-			parser.lexycal_attributes.lexeme_builder.write_b(word.str())
+			parser.lexycal_attributes.lexeme_builder.write_b(word)
 		}
 		//println(parser.builder_str())
 	}
@@ -133,11 +134,10 @@ pub fn (parser mut Parser) split_parse(data string) {
 
 pub fn (parser mut Parser) parse_html(data string, is_file bool) {
 	if is_file {
-		text := os.read_file(data) or {
+		lines := os.read_lines(data) or {
 			eprintln('failed to read the file $data')
 			return
 		}
-		lines := text.split_into_lines()
 		for line in lines {
 			parser.split_parse(line)
 		}
