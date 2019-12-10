@@ -5,5 +5,5 @@
 ./main
 
 # Ignoring test files
-*html
+*.html
 *.log

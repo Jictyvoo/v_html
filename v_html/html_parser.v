@@ -6,16 +6,6 @@ enum TokenType {
 	html_string tag open_tag close_tag open_comment close_comment
 }
 
-struct Tag {
-	pub mut:
-		name string = ""
-		attributes map[string]string /*attributes will be like map[name]value*/
-		last_attribute string = ""
-		content string = ""
-		children []Tag
-		closed bool = false
-}
-
 struct LexycalAttributes {
 	mut:
 		current_tag Tag
@@ -38,7 +28,7 @@ fn (lxa mut LexycalAttributes) write_lexeme(data string) {
 
 pub struct Parser {
 	mut:
-		close_tags map[string]bool = {"/!document": true}
+		dom DocumentObjectModel
 		lexycal_attributes LexycalAttributes = LexycalAttributes{}
 		filename string = "direct-parse"
 		tags []Tag
@@ -81,6 +71,7 @@ pub fn (parser mut Parser) split_parse(data string) {
 		}
 		if parser.lexycal_attributes.open_code {
 			//here will verify all needed to know if open_code finishes and string in code
+			
 		} else if parser.lexycal_attributes.open_comment {
 			if word == 62 && parser.verify_end_comment(false) { //close tag '>
 				parser.print_debug(parser.builder_str() + " >> " + parser.lexycal_attributes.line_count.str())
@@ -112,7 +103,7 @@ pub fn (parser mut Parser) split_parse(data string) {
 			} else if word == 62 { // close tag >
 				complete_lexeme := parser.builder_str()
 				if complete_lexeme.len > 0 && complete_lexeme[0] == 47 { // if equals to /
-					parser.close_tags[complete_lexeme] = true
+					parser.dom.close_tags[complete_lexeme] = true
 				} else if complete_lexeme.len > 0 && complete_lexeme[complete_lexeme.len - 1] == 47 { // if end tag like "/>"
 					parser.lexycal_attributes.current_tag.closed = true
 				}
@@ -122,18 +113,19 @@ pub fn (parser mut Parser) split_parse(data string) {
 					parser.lexycal_attributes.current_tag.attributes[complete_lexeme] = ""
 				}
 				parser.lexycal_attributes.open_tag = false
+				println(parser.lexycal_attributes.current_tag.name)
 				parser.lexycal_attributes.lexeme_builder = ""
+				if parser.lexycal_attributes.code_tags[parser.lexycal_attributes.current_tag.name] { // if tag name is code
+					parser.lexycal_attributes.open_code = true
+					parser.lexycal_attributes.opened_code_type = parser.lexycal_attributes.current_tag.name
+				}
 				parser.print_debug(parser.lexycal_attributes.current_tag.name)
 			} else if word != 9 && word != 32 && word != 61 { // Tab, space and =
 				parser.lexycal_attributes.write_lexeme(word.str())
 			} else {
 				complete_lexeme := parser.builder_str()
 				if parser.lexycal_attributes.current_tag.name == "" {
-					parser.lexycal_attributes.current_tag.name = complete_lexeme
-					if parser.lexycal_attributes.code_tags[parser.lexycal_attributes.current_tag.name] {
-						parser.lexycal_attributes.open_code = true
-						parser.lexycal_attributes.opened_code_type = parser.lexycal_attributes.current_tag.name
-					} 
+					parser.lexycal_attributes.current_tag.name = complete_lexeme 
 				} else {
 					parser.lexycal_attributes.current_tag.attributes[complete_lexeme] = ""
 					parser.lexycal_attributes.current_tag.last_attribute = ""
@@ -175,5 +167,10 @@ pub fn (parser mut Parser) parse_html(data string, is_file bool) {
 		parser.lexycal_attributes.line_count++
 		parser.split_parse(line)
 	}
+	parser.dom.construct(parser.tags)
 	//println(parser.close_tags.keys())
+}
+
+pub fn (parser Parser) get_dom() DocumentObjectModel {
+	return parser.dom
 }

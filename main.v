@@ -14,6 +14,7 @@ fn main() {
 	d_file := os.create("debug.log") or {eprintln('failed to read the file') return}
 	mut parser := v_html.Parser{debug_file: d_file}
 	parser.parse_html("myanime_test.html", true)
-	
+	dom := parser.get_dom()
+	println(dom.get_root())
 }
 //AnotherOne{builder:One{}}
