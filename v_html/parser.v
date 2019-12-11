@@ -84,6 +84,7 @@ pub fn (parser mut Parser) split_parse(data string) {
 		} else if parser.lexycal_attributes.open_string > 0 {
 			if parser.lexycal_attributes.open_string == string_code {
 				parser.lexycal_attributes.open_string = 0
+				parser.lexycal_attributes.write_lexeme(word.str())
 				temp_lexeme := parser.builder_str()
 				if parser.lexycal_attributes.current_tag.last_attribute != "" {
 					parser.lexycal_attributes.current_tag.attributes[parser.lexycal_attributes.current_tag.last_attribute] = temp_lexeme
@@ -100,6 +101,7 @@ pub fn (parser mut Parser) split_parse(data string) {
 		} else if parser.lexycal_attributes.open_tag {
 			if parser.lexycal_attributes.lexeme_builder.len == 0 && is_quotation {
 				parser.lexycal_attributes.open_string = string_code
+				parser.lexycal_attributes.write_lexeme(word.str())
 			} else if word == 62 { // close tag >
 				complete_lexeme := parser.builder_str()
 				if complete_lexeme.len > 0 && complete_lexeme[0] == 47 { // if equals to /

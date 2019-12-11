@@ -63,7 +63,7 @@ fn (dom mut DocumentObjectModel) add_tag_by_type(tag Tag) {
 	dom.tag_type[tag_name] << tag
 }
 
-fn compare_string(a string, b string) bool {
+fn compare_string(a string, b string) bool { // for some reason == doesn't work
 	if a.len != b.len {return false}
 	for i := 0; i < a.len; i++ {
 		if a[i] != b[i] {
