@@ -1,5 +1,7 @@
 module v_html
 
+import os
+
 pub struct DocumentObjectModel {
 	mut:
 		tags []Tag
@@ -9,6 +11,13 @@ pub struct DocumentObjectModel {
 		attributes map[string][]string
 		tag_attributes [][]Tag
 		tag_type map[string][]Tag
+		debug_file os.File
+}
+
+fn (dom mut DocumentObjectModel) print_debug(data string) {
+	if data.len > 0 {
+		dom.debug_file.writeln(data)
+	}
 }
 
 fn (dom mut DocumentObjectModel) new_root(tag Tag) {
@@ -56,32 +65,54 @@ fn (dom mut DocumentObjectModel) add_tag_by_type(tag Tag) {
 	dom.tag_type[tag_name] << tag
 }
 
+fn compare_string(a string, b string) bool {
+	if a.len != b.len {return false}
+	for i := 0; i < a.len; i++ {
+		if a[i] != b[i] {
+			return false
+		}
+		return true
+	}
+	return false
+}
+
 fn (dom mut DocumentObjectModel) construct(tag_list []Tag) {
+	dom.stack = Stack{null_tag: Tag{name: "__null_tag"}}
 	dom.tags = tag_list
-	dom.root = tag_list[0]
+	dom.root = tag_list[1]
+	dom.stack.push(tag_list[1])
 	mut temp_tag := dom.stack.null_tag
 	mut temp_string := ""
-	for tag in tag_list {
+	for index := 2; index < tag_list.len; index++ {
+		tag := tag_list[index]
 		if is_close_tag(tag) {
 			temp_tag = dom.stack.peek()
-			for !dom.stack.is_null(temp_tag) && (tag.name[1 .. tag.name.len] != dom.stack.peek().name) {
-				temp_tag = dom.stack.peek()
+			temp_string = tag.name[1 .. tag.name.len]
+			
+			//print(temp_string + " != " + temp_tag.name + " >> ")
+			//println(temp_string != temp_tag.name)
+			for !dom.stack.is_null(temp_tag) && !compare_string(temp_string, temp_tag.name) {
+				dom.print_debug(temp_string + " >> " + temp_tag.name + " " + compare_string(temp_string, temp_tag.name).str())
 				dom.stack.pop()
+				temp_tag = dom.stack.peek()
 			}
 			temp_tag = dom.stack.peek()
 			if !dom.stack.is_null(temp_tag) { dom.stack.pop() }
-		} else {
-			dom.add_tag_attribute(tag) dom.add_tag_by_type(tag)
-			temp_string = "/" + tag.name
-			if dom.close_tags[temp_string] || !tag.closed { //if tag ends with />
-				dom.stack.push(tag)
+			dom.print_debug(temp_string + " -- " + temp_tag.name)
+		} else if tag.name.len > 0 {
+			dom.add_tag_attribute(tag)
+			//dom.add_tag_by_type(tag)
+			temp_tag = dom.stack.peek()
+			if !dom.stack.is_null(temp_tag) {
+				temp_tag.add_child(tag)
+				dom.print_debug("Added ${tag.name} as child of '" + temp_tag.name + "' which have now ${temp_tag.children.len} childrens")
 			} else {
-				temp_tag = dom.stack.peek()
-				if !dom.stack.is_null(temp_tag) {
-					temp_tag.add_child(tag)
-				} else {
-					dom.new_root(tag)
-				}
+				dom.new_root(tag)
+			}
+			temp_string = "/" + tag.name
+			if temp_string in dom.close_tags { // || !tag.closed //if tag ends with />
+				dom.print_debug("Pushed " + temp_string)
+				dom.stack.push(tag)
 			}
 		}
 	}

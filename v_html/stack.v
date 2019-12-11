@@ -8,7 +8,7 @@ struct Stack {
 }
 
 fn (stack Stack) is_null(verify Tag) bool {
-	return &verify == &stack.null_tag
+	return verify.name == stack.null_tag.name
 }
 
 fn (stack Stack) is_empty() bool {

@@ -74,7 +74,7 @@ pub fn (parser mut Parser) split_parse(data string) {
 			
 		} else if parser.lexycal_attributes.open_comment {
 			if word == 62 && parser.verify_end_comment(false) { //close tag '>
-				parser.print_debug(parser.builder_str() + " >> " + parser.lexycal_attributes.line_count.str())
+				//parser.print_debug(parser.builder_str() + " >> " + parser.lexycal_attributes.line_count.str())
 				parser.lexycal_attributes.lexeme_builder = "" //strings.Builder{}
 				parser.lexycal_attributes.open_comment = false
 				parser.lexycal_attributes.open_tag = false
@@ -109,17 +109,16 @@ pub fn (parser mut Parser) split_parse(data string) {
 				}
 				if parser.lexycal_attributes.current_tag.name == "" {
 					parser.lexycal_attributes.current_tag.name = complete_lexeme
-				} else {
+				} else if complete_lexeme != "/" {
 					parser.lexycal_attributes.current_tag.attributes[complete_lexeme] = ""
 				}
 				parser.lexycal_attributes.open_tag = false
-				println(parser.lexycal_attributes.current_tag.name)
 				parser.lexycal_attributes.lexeme_builder = ""
 				if parser.lexycal_attributes.code_tags[parser.lexycal_attributes.current_tag.name] { // if tag name is code
 					parser.lexycal_attributes.open_code = true
 					parser.lexycal_attributes.opened_code_type = parser.lexycal_attributes.current_tag.name
 				}
-				parser.print_debug(parser.lexycal_attributes.current_tag.name)
+				//parser.print_debug(parser.lexycal_attributes.current_tag.name)
 			} else if word != 9 && word != 32 && word != 61 { // Tab, space and =
 				parser.lexycal_attributes.write_lexeme(word.str())
 			} else {
@@ -141,9 +140,10 @@ pub fn (parser mut Parser) split_parse(data string) {
 			if parser.lexycal_attributes.lexeme_builder.len >= 1 {
 				tags << Tag{content: parser.builder_str()} //verify later who has this content
 			}
+			//parser.print_debug(parser.lexycal_attributes.current_tag.str())
 			parser.lexycal_attributes.lexeme_builder = ""
-			parser.lexycal_attributes.current_tag = Tag{}
 			tags << parser.lexycal_attributes.current_tag
+			parser.lexycal_attributes.current_tag = Tag{}
 			parser.tags = tags
 			parser.lexycal_attributes.open_tag = true
 		} else {
@@ -167,6 +167,7 @@ pub fn (parser mut Parser) parse_html(data string, is_file bool) {
 		parser.lexycal_attributes.line_count++
 		parser.split_parse(line)
 	}
+	parser.dom.debug_file = parser.debug_file
 	parser.dom.construct(parser.tags)
 	//println(parser.close_tags.keys())
 }
