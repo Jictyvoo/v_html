@@ -138,7 +138,7 @@ pub fn (parser mut Parser) split_parse(data string) {
 		} else if word == 60 { //open tag '<'
 			mut tags := parser.tags //[]Tag//
 			if parser.lexycal_attributes.lexeme_builder.len >= 1 {
-				tags << Tag{content: parser.builder_str()} //verify later who has this content
+				parser.lexycal_attributes.current_tag.content = parser.builder_str() //verify later who has this content
 			}
 			//parser.print_debug(parser.lexycal_attributes.current_tag.str())
 			parser.lexycal_attributes.lexeme_builder = ""

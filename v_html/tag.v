@@ -11,7 +11,9 @@ struct Tag {
 }
 
 fn (tag mut Tag) add_child(t Tag) {
-	tag.children << t
+	mut children := tag.children
+	children << t
+	tag.children = children
 }
 
 pub fn (tag Tag) get_children() []Tag {
@@ -26,7 +28,6 @@ pub fn (tag Tag) str() string {
 		if value.len > 0 { to_return += "='" + "${tag.attributes[key]}" + "'" }
 	}
 	to_return += ">"
-	println("Children " + tag.children.len.str())
 	for child in tag.children { to_return += child.str() }
-	return to_return + "</${tag.name}>"
+	return to_return + "${tag.content}</${tag.name}>"
 }
