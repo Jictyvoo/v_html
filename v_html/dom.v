@@ -101,7 +101,7 @@ fn (dom mut DocumentObjectModel) construct(tag_list []Tag) {
 			dom.print_debug(temp_string + " -- " + temp_tag.name)
 		} else if tag.name.len > 0 {
 			dom.add_tag_attribute(tag)
-			//dom.add_tag_by_type(tag)
+			dom.add_tag_by_type(tag)
 			temp_tag = dom.stack.peek()
 			if !dom.stack.is_null(temp_tag) {
 				temp_tag.add_child(tag)
