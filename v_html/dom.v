@@ -78,7 +78,6 @@ fn (dom mut DocumentObjectModel) construct(tag_list []Tag) {
 	mut stack := Stack{null_tag: Tag{name: "__null_tag"}}
 	dom.root = tag_list[1]
 	stack.push(tag_list[1])
-	println(tag_list[4])
 	mut temp_tag := stack.null_tag
 	mut temp_string := ""
 	for index := 2; index < tag_list.len; index++ {

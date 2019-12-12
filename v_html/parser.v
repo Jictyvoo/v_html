@@ -45,7 +45,7 @@ fn (parser mut Parser) print_debug(data string) {
 	}
 }
 
-pub fn (parser mut Parser) verify_end_comment(remove bool) bool {
+fn (parser mut Parser) verify_end_comment(remove bool) bool {
 	lexeme := parser.builder_str()
     last := lexeme[lexeme.len - 1]
     penultimate := lexeme[lexeme.len - 2]
@@ -60,6 +60,10 @@ pub fn (parser mut Parser) verify_end_comment(remove bool) bool {
     return is_end_comment
 }
 
+fn compare_end_string(first string, second string) bool {
+	return false
+}
+
 pub fn (parser mut Parser) split_parse(data string) {
 	for word in data {
 		mut is_quotation := false
@@ -71,7 +75,19 @@ pub fn (parser mut Parser) split_parse(data string) {
 		}
 		if parser.lexycal_attributes.open_code {
 			//here will verify all needed to know if open_code finishes and string in code
-			
+			parser.lexycal_attributes.write_lexeme(word.str())
+			if parser.lexycal_attributes.open_string > 0 {
+				if parser.lexycal_attributes.open_string == string_code {
+					parser.lexycal_attributes.open_string = 0
+				}
+			} else if is_quotation {
+				parser.lexycal_attributes.open_string = string_code
+			} else {
+				// here will verify < to know if code tag is finished
+				if compare_end_string(parser.builder_str(), "/" + parser.lexycal_attributes.opened_code_type) {
+
+				}
+			}
 		} else if parser.lexycal_attributes.open_comment {
 			if word == 62 && parser.verify_end_comment(false) { //close tag '>
 				//parser.print_debug(parser.builder_str() + " >> " + parser.lexycal_attributes.line_count.str())
@@ -116,7 +132,7 @@ pub fn (parser mut Parser) split_parse(data string) {
 				}
 				parser.lexycal_attributes.open_tag = false
 				parser.lexycal_attributes.lexeme_builder = ""
-				if parser.lexycal_attributes.code_tags[parser.lexycal_attributes.current_tag.name] { // if tag name is code
+				if parser.lexycal_attributes.current_tag.name in parser.lexycal_attributes.code_tags { // if tag name is code
 					parser.lexycal_attributes.open_code = true
 					parser.lexycal_attributes.opened_code_type = parser.lexycal_attributes.current_tag.name
 				}
