@@ -5,6 +5,7 @@ import os
 pub struct DocumentObjectModel {
 	mut:
 		root Tag
+		constructed bool = false
 		close_tags map[string]bool = {"/!document": true}
 		attributes map[string][]string
 		tag_attributes [][]Tag
@@ -75,6 +76,7 @@ fn compare_string(a string, b string) bool { // for some reason == doesn't work
 }
 
 fn (dom mut DocumentObjectModel) construct(tag_list []Tag) {
+	dom.constructed = true
 	mut stack := Stack{null_tag: Tag{name: "__null_tag"}}
 	dom.root = tag_list[1]
 	stack.push(tag_list[1])

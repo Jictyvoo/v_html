@@ -190,6 +190,7 @@ pub fn (parser mut Parser) parse_html(data string, is_file bool) {
 	//println(parser.close_tags.keys())
 }
 
-pub fn (parser Parser) get_dom() DocumentObjectModel {
+pub fn (parser mut Parser) get_dom() DocumentObjectModel {
+	if !parser.dom.constructed {parser.dom.construct(parser.tags)}
 	return parser.dom
 }

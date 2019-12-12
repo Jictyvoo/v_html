@@ -2,6 +2,16 @@
 
 A HTML parser made in V
 
+## Usage
+
+### split_parse(data string)
+
+This functions is the main function called by parse method to fragment parse your HTML
+
+### parse_html(data string, is_file bool)
+
+This function is called passing a filename or a complete html data string to it
+
 ## Some question that can appear
 
 ### Q: Why in parser have a `builder_str() string` method that returns only the lexeme string?
