@@ -70,9 +70,8 @@ fn compare_string(a string, b string) bool { // for some reason == doesn't work
 		if a[i] != b[i] {
 			return false
 		}
-		return true
 	}
-	return false
+	return true
 }
 
 fn (dom mut DocumentObjectModel) construct(tag_list []Tag) {
@@ -84,6 +83,7 @@ fn (dom mut DocumentObjectModel) construct(tag_list []Tag) {
 	mut temp_string := ""
 	for index := 2; index < tag_list.len; index++ {
 		tag := tag_list[index]
+		dom.print_debug(tag.str())
 		if is_close_tag(tag) {
 			temp_tag = stack.peek()
 			temp_string = tag.name[1 .. tag.name.len]

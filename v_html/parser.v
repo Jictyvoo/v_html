@@ -35,6 +35,17 @@ pub struct Parser {
 		debug_file os.File
 }
 
+pub fn (parser mut Parser) add_code_tag(name string) {
+	mut code_tags := parser.lexycal_attributes.code_tags
+	if parser.lexycal_attributes.code_tags.keys().len <= 0 {
+		code_tags["script"] = true code_tags["style"] = true
+	}
+	if name.len > 0 {
+		code_tags[name] = true
+	}
+	parser.lexycal_attributes.code_tags = code_tags
+}
+
 fn (parser Parser) builder_str() string {
 	return parser.lexycal_attributes.lexeme_builder
 }
@@ -61,7 +72,13 @@ fn (parser mut Parser) verify_end_comment(remove bool) bool {
 }
 
 fn compare_end_string(first string, second string) bool {
-	return false
+	mut big := first
+	mut small := second
+	if second.len > big.len {big = second small = first}
+	for index := 0; index < small.len; index++ {
+		if small[index] != big[big.len - small.len + index] {return false}
+	}
+	return true
 }
 
 pub fn (parser mut Parser) split_parse(data string) {
@@ -82,10 +99,15 @@ pub fn (parser mut Parser) split_parse(data string) {
 				}
 			} else if is_quotation {
 				parser.lexycal_attributes.open_string = string_code
-			} else {
+			} else if word == 62 { //only execute verification if is a >
 				// here will verify < to know if code tag is finished
-				if compare_end_string(parser.builder_str(), "/" + parser.lexycal_attributes.opened_code_type) {
-
+				name_close_tag := "</" + parser.lexycal_attributes.opened_code_type + ">"
+				temp_string := parser.builder_str()
+				if compare_end_string(temp_string, name_close_tag) {
+					parser.lexycal_attributes.open_code = false
+					// need to modify lexeme_builder to add script text as a content in next loop (not gave error in dom)
+					parser.lexycal_attributes.lexeme_builder = temp_string[0 .. temp_string.len - name_close_tag.len]
+					parser.lexycal_attributes.current_tag.closed = true
 				}
 			}
 		} else if parser.lexycal_attributes.open_comment {
