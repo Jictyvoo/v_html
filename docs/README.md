@@ -35,7 +35,7 @@ This function is called passing a filename or a complete html data string to it
 * Discover why tag.add_children(tag) doesn't work normally
 * Improve default search in dom
 * Add test file to test all public functions
-* Test parser with github html (have some weird things)
+* Test parser with github html (have some weird things, like `Segmentation fault (core dumped)`)
 * Maybe more
 
 ### Need verifying

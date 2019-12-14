@@ -81,6 +81,16 @@ fn compare_end_string(first string, second string) bool {
 	return true
 }
 
+fn blank_string(data string) bool {
+	mut count := 0
+	for word in data {
+		if word == 9 || word == 32 {
+			count++
+		}
+	}
+	return count == data.len
+}
+
 pub fn (parser mut Parser) split_parse(data string) {
 	for word in data {
 		mut is_quotation := false
@@ -177,8 +187,13 @@ pub fn (parser mut Parser) split_parse(data string) {
 			if parser.builder_str() == "!--" { parser.lexycal_attributes.open_comment = true }
 		} else if word == 60 { //open tag '<'
 			mut tags := parser.tags //[]Tag//
+			temp_string := parser.builder_str()
 			if parser.lexycal_attributes.lexeme_builder.len >= 1 {
-				parser.lexycal_attributes.current_tag.content = parser.builder_str() //verify later who has this content
+				if parser.lexycal_attributes.current_tag.name.len > 1 && parser.lexycal_attributes.current_tag.name[0] == 47 && !blank_string(temp_string) {
+					tags << Tag{name: "text", content: temp_string}
+				} else {
+					parser.lexycal_attributes.current_tag.content = temp_string //verify later who has this content
+				}
 			}
 			//parser.print_debug(parser.lexycal_attributes.current_tag.str())
 			parser.lexycal_attributes.lexeme_builder = ""
