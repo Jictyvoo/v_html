@@ -28,7 +28,7 @@ fn (stack mut Stack) pop() int {
 		to_return = stack.elements[stack.size - 1]
 		stack.size--
 	}
-	return stack.null_element
+	return to_return
 }
 
 fn (stack mut Stack) push(item int) {
