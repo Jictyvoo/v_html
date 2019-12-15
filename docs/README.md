@@ -32,7 +32,7 @@ This function is called passing a filename or a complete html data string to it
 
 ## To-do
 
-* Remove `temp_tag` from dom.v, currently only is used for debug purposes
+* Replace all dom and tag childs by a BTree class
 * Improve default search in dom
 * Add test file to test all public functions
 * Test parser with github html (have some weird things, dom is incorrect while removing things from it)

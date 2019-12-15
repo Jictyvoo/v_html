@@ -14,8 +14,10 @@ pub struct DocumentObjectModel {
 }
 
 fn (dom mut DocumentObjectModel) print_debug(data string) {
-	if data.len > 0 {
-		dom.debug_file.writeln(data)
+	$if debug {
+		if data.len > 0 {
+			dom.debug_file.writeln(data)
+		}
 	}
 }
 
@@ -79,8 +81,7 @@ fn (dom mut DocumentObjectModel) construct(tag_list mut []Tag) {
 	mut stack := Stack{}
 	dom.root = tag_list[1]
 	stack.push(1)
-	mut root_index := 1
-	mut temp_tag := tag_list[0]
+	root_index := 1
 	mut temp_int := C.NULL
 	mut temp_string := ""
 	for index := 2; index < tag_list.len; index++ {
@@ -88,20 +89,18 @@ fn (dom mut DocumentObjectModel) construct(tag_list mut []Tag) {
 		dom.print_debug(tag.str())
 		if is_close_tag(tag) {
 			temp_int = stack.peek()
-			if !stack.is_null(temp_int) {temp_tag = tag_list[temp_int]}
 			temp_string = tag.name[1 .. tag.name.len]
 			
-			//print(temp_string + " != " + temp_tag.name + " >> ")
-			//println(temp_string != temp_tag.name)
-			for !stack.is_null(temp_int) && !compare_string(temp_string, temp_tag.name) && !temp_tag.closed {
-				dom.print_debug(temp_string + " >> " + temp_tag.name + " " + compare_string(temp_string, temp_tag.name).str())
+			//print(temp_string + " != " + tag_list[temp_int].name + " >> ")
+			//println(temp_string != tag_list[temp_int].name)
+			for !stack.is_null(temp_int) && !compare_string(temp_string, tag_list[temp_int].name) && !tag_list[temp_int].closed {
+				dom.print_debug(temp_string + " >> " + tag_list[temp_int].name + " " + compare_string(temp_string, tag_list[temp_int].name).str())
 				stack.pop()
 				temp_int = stack.peek()
-				if !stack.is_null(temp_int) {temp_tag = tag_list[temp_int]}
 			}
 			temp_int = stack.peek()
-			if !stack.is_null(temp_int) { temp_tag = tag_list[temp_int] stack.pop() }
-			dom.print_debug("Removed " + temp_string + " -- " + temp_tag.name)
+			if !stack.is_null(temp_int) { stack.pop() }
+			dom.print_debug("Removed " + temp_string + " -- " + tag_list[temp_int].name)
 		} else if tag.name.len > 0 {
 			dom.add_tag_attribute(tag)
 			dom.add_tag_by_type(tag)
@@ -110,9 +109,8 @@ fn (dom mut DocumentObjectModel) construct(tag_list mut []Tag) {
 				tag_list[temp_int].add_child(tag)
 				dom.print_debug("Added ${tag.name} as child of '" + tag_list[temp_int].name + "' which now has ${tag_list[temp_int].children.len} childrens")
 			} else {
-				dom.new_root(tag)
+				//dom.new_root(tag)
 				stack.push(root_index)
-				root_index = index
 			}
 			temp_string = "/" + tag.name
 			if temp_string in dom.close_tags && !tag.closed { //if tag ends with />
@@ -121,6 +119,7 @@ fn (dom mut DocumentObjectModel) construct(tag_list mut []Tag) {
 			}
 		}
 	}
+	//println(tag_list[root_index]) //for debug purposes
 }
 
 pub fn (dom mut DocumentObjectModel) get_by_attributes(name string, value string) []Tag {

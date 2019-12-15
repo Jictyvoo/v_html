@@ -51,8 +51,10 @@ fn (parser Parser) builder_str() string {
 }
 
 fn (parser mut Parser) print_debug(data string) {
-	if data.len > 0 {
-		parser.debug_file.writeln(data)
+	$if debug {
+		if data.len > 0 {
+			parser.debug_file.writeln(data)
+		}
 	}
 }
 
