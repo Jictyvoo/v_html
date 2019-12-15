@@ -38,7 +38,7 @@ This function is called passing a filename or a complete html data string to it
 * Test parser with github html (have some weird things, dom is incorrect while removing things from it)
 * Maybe more
 
-### Need verifying
+### Need verification
 
 * Finish open_code verification
 * Verify if code blocks are being verified and read all script and style code
