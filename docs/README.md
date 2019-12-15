@@ -32,10 +32,10 @@ This function is called passing a filename or a complete html data string to it
 
 ## To-do
 
-* Discover why tag.add_children(tag) doesn't work normally
+* Remove `temp_tag` from dom.v, currently only is used for debug purposes
 * Improve default search in dom
 * Add test file to test all public functions
-* Test parser with github html (have some weird things, like `Segmentation fault (core dumped)`)
+* Test parser with github html (have some weird things, dom is incorrect while removing things from it)
 * Maybe more
 
 ### Need verifying
@@ -43,6 +43,7 @@ This function is called passing a filename or a complete html data string to it
 * Finish open_code verification
 * Verify if code blocks are being verified and read all script and style code
 * Add closed_tag verification to dom generator again (Doesn't need, because all tags are classified as closed)
+* Discover why tag.add_children(tag) doesn't work normally (Now works in debug file, but get_dom still doesn't. Problem was array must to be mut)
 
 ## Done
 

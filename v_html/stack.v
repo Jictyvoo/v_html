@@ -1,37 +1,37 @@
 module v_html
 
 struct Stack {
-	null_tag Tag
+	null_element int = C.NULL
 	mut:
-		elements []Tag
+		elements []int
 		size int = 0
 }
 
-fn (stack Stack) is_null(verify Tag) bool {
-	return verify.name == stack.null_tag.name
+fn (stack Stack) is_null(data int) bool {
+	return data == stack.null_element
 }
 
 fn (stack Stack) is_empty() bool {
 	return stack.size <= 0
 }
 
-fn (stack Stack) peek() Tag {
+fn (stack Stack) peek() int {
 	if !stack.is_empty() {
 		return stack.elements[stack.size - 1]
 	}
-	return stack.null_tag
+	return stack.null_element
 }
 
-fn (stack mut Stack) pop() Tag {
-	mut to_return := stack.null_tag
+fn (stack mut Stack) pop() int {
+	mut to_return := stack.null_element
 	if !stack.is_empty() {
 		to_return = stack.elements[stack.size - 1]
 		stack.size--
 	}
-	return stack.null_tag
+	return stack.null_element
 }
 
-fn (stack mut Stack) push(item Tag) {
+fn (stack mut Stack) push(item int) {
 	if stack.elements.len > stack.size {
 		stack.elements[stack.size] = item
 	} else {

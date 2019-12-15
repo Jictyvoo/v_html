@@ -27,7 +27,9 @@ pub fn (tag Tag) str() string {
 		value := tag.attributes[key]
 		if value.len > 0 { to_return += "=" + "${tag.attributes[key]}" }
 	}
-	to_return += ">"
+	to_return += if tag.closed { "/>" } else {">"}
 	for child in tag.children { to_return += child.str() }
-	return to_return + "${tag.content}</${tag.name}>"
+	to_return += "${tag.content}"
+	if !tag.closed { to_return += "</${tag.name}>"}
+	return to_return
 }

@@ -152,11 +152,12 @@ pub fn (parser mut Parser) split_parse(data string) {
 				parser.lexycal_attributes.write_lexeme(word.str())
 			} else if word == 62 { // close tag >
 				complete_lexeme := parser.builder_str()
+				parser.lexycal_attributes.current_tag.closed = (complete_lexeme.len > 0 && complete_lexeme[complete_lexeme.len - 1] == 47)
 				if complete_lexeme.len > 0 && complete_lexeme[0] == 47 { // if equals to /
 					parser.dom.close_tags[complete_lexeme] = true
-				} else if complete_lexeme.len > 0 && complete_lexeme[complete_lexeme.len - 1] == 47 { // if end tag like "/>"
+				} /*else if complete_lexeme.len > 0 && complete_lexeme[complete_lexeme.len - 1] == 47 { // if end tag like "/>"
 					parser.lexycal_attributes.current_tag.closed = true
-				}
+				}*/
 				if parser.lexycal_attributes.current_tag.name == "" {
 					parser.lexycal_attributes.current_tag.name = complete_lexeme
 				} else if complete_lexeme != "/" {
@@ -223,11 +224,11 @@ pub fn (parser mut Parser) parse_html(data string, is_file bool) {
 		parser.split_parse(line)
 	}
 	parser.dom.debug_file = parser.debug_file
-	parser.dom.construct(parser.tags)
+	parser.dom.construct(mut parser.tags)
 	//println(parser.close_tags.keys())
 }
 
 pub fn (parser mut Parser) get_dom() DocumentObjectModel {
-	if !parser.dom.constructed {parser.dom.construct(parser.tags)}
+	if !parser.dom.constructed {parser.dom.construct(mut parser.tags)}
 	return parser.dom
 }

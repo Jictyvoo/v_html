@@ -74,45 +74,50 @@ fn compare_string(a string, b string) bool { // for some reason == doesn't work
 	return true
 }
 
-fn (dom mut DocumentObjectModel) construct(tag_list []Tag) {
+fn (dom mut DocumentObjectModel) construct(tag_list mut []Tag) {
 	dom.constructed = true
-	mut stack := Stack{null_tag: Tag{name: "__null_tag"}}
+	mut stack := Stack{}
 	dom.root = tag_list[1]
-	stack.push(tag_list[1])
-	mut temp_tag := stack.null_tag
+	stack.push(1)
+	mut root_index := 1
+	mut temp_tag := tag_list[0]
+	mut temp_int := C.NULL
 	mut temp_string := ""
 	for index := 2; index < tag_list.len; index++ {
 		tag := tag_list[index]
 		dom.print_debug(tag.str())
 		if is_close_tag(tag) {
-			temp_tag = stack.peek()
+			temp_int = stack.peek()
+			if !stack.is_null(temp_int) {temp_tag = tag_list[temp_int]}
 			temp_string = tag.name[1 .. tag.name.len]
 			
 			//print(temp_string + " != " + temp_tag.name + " >> ")
 			//println(temp_string != temp_tag.name)
-			for !stack.is_null(temp_tag) && !compare_string(temp_string, temp_tag.name) {
+			for !stack.is_null(temp_int) && !compare_string(temp_string, temp_tag.name) && !temp_tag.closed {
 				dom.print_debug(temp_string + " >> " + temp_tag.name + " " + compare_string(temp_string, temp_tag.name).str())
 				stack.pop()
-				temp_tag = stack.peek()
+				temp_int = stack.peek()
+				if !stack.is_null(temp_int) {temp_tag = tag_list[temp_int]}
 			}
-			temp_tag = stack.peek()
-			if !stack.is_null(temp_tag) { stack.pop() }
+			temp_int = stack.peek()
+			if !stack.is_null(temp_int) { temp_tag = tag_list[temp_int] stack.pop() }
 			dom.print_debug("Removed " + temp_string + " -- " + temp_tag.name)
 		} else if tag.name.len > 0 {
 			dom.add_tag_attribute(tag)
 			dom.add_tag_by_type(tag)
-			temp_tag = stack.peek()
-			if !stack.is_null(temp_tag) {
-				temp_tag.add_child(tag)
-				dom.print_debug("Added ${tag.name} as child of '" + temp_tag.name + "' which now has ${temp_tag.children.len} childrens")
+			temp_int = stack.peek()
+			if !stack.is_null(temp_int) {
+				tag_list[temp_int].add_child(tag)
+				dom.print_debug("Added ${tag.name} as child of '" + tag_list[temp_int].name + "' which now has ${tag_list[temp_int].children.len} childrens")
 			} else {
 				dom.new_root(tag)
-				stack.push(dom.root)
+				stack.push(root_index)
+				root_index = index
 			}
 			temp_string = "/" + tag.name
-			if temp_string in dom.close_tags { // || !tag.closed //if tag ends with />
+			if temp_string in dom.close_tags && !tag.closed { //if tag ends with />
 				dom.print_debug("Pushed " + temp_string)
-				stack.push(tag)
+				stack.push(index)
 			}
 		}
 	}
