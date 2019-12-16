@@ -6,18 +6,7 @@ struct Tag {
 		attributes map[string]string /*attributes will be like map[name]value*/
 		last_attribute string = ""
 		content string = ""
-		children []Tag
 		closed bool = false
-}
-
-fn (tag mut Tag) add_child(t Tag) {
-	mut children := tag.children
-	children << t
-	tag.children = children
-}
-
-pub fn (tag Tag) get_children() []Tag {
-	return tag.children
 }
 
 pub fn (tag Tag) str() string {
@@ -28,7 +17,6 @@ pub fn (tag Tag) str() string {
 		if value.len > 0 { to_return += "=" + "${tag.attributes[key]}" }
 	}
 	to_return += if tag.closed { "/>" } else {">"}
-	for child in tag.children { to_return += child.str() }
 	to_return += "${tag.content}"
 	if !tag.closed { to_return += "</${tag.name}>"}
 	return to_return

@@ -226,11 +226,11 @@ pub fn (parser mut Parser) parse_html(data string, is_file bool) {
 		parser.split_parse(line)
 	}
 	parser.dom.debug_file = parser.debug_file
-	parser.dom.construct(mut parser.tags)
+	parser.dom.construct(parser.tags)
 	//println(parser.close_tags.keys())
 }
 
 pub fn (parser mut Parser) get_dom() DocumentObjectModel {
-	if !parser.dom.constructed {parser.dom.construct(mut parser.tags)}
+	if !parser.dom.constructed {parser.dom.construct(parser.tags)}
 	return parser.dom
 }

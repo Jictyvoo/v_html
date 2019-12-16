@@ -6,6 +6,7 @@ pub struct DocumentObjectModel {
 	mut:
 		root Tag
 		constructed bool = false
+		btree BTree
 		close_tags map[string]bool = {"/!document": true}
 		attributes map[string][]string
 		tag_attributes [][]Tag
@@ -21,11 +22,11 @@ fn (dom mut DocumentObjectModel) print_debug(data string) {
 	}
 }
 
-fn (dom mut DocumentObjectModel) new_root(tag Tag) {
+/*fn (dom mut DocumentObjectModel) new_root(tag Tag) {
 	mut new_tag := Tag{} new_tag.name = "div"
 	new_tag.add_child(dom.root) new_tag.add_child(tag)
 	dom.root = new_tag
-}
+}*/
 
 fn is_close_tag(tag Tag) bool {
 	if tag.name.len > 0 {
@@ -76,14 +77,16 @@ fn compare_string(a string, b string) bool { // for some reason == doesn't work
 	return true
 }
 
-fn (dom mut DocumentObjectModel) construct(tag_list mut []Tag) {
+fn (dom mut DocumentObjectModel) construct(tag_list []Tag) {
 	dom.constructed = true
-	mut stack := Stack{}
-	dom.root = tag_list[1]
-	stack.push(1)
-	root_index := 1
+	mut temp_map := map[string]int
 	mut temp_int := C.NULL
 	mut temp_string := ""
+	mut stack := Stack{}
+	dom.root = tag_list[1]
+	temp_map["1"] = dom.btree.add_children(tag_list[1])
+	stack.push(1)
+	root_index := 1
 	for index := 2; index < tag_list.len; index++ {
 		tag := tag_list[index]
 		dom.print_debug(tag.str())
@@ -106,8 +109,9 @@ fn (dom mut DocumentObjectModel) construct(tag_list mut []Tag) {
 			dom.add_tag_by_type(tag)
 			temp_int = stack.peek()
 			if !stack.is_null(temp_int) {
-				tag_list[temp_int].add_child(tag)
-				dom.print_debug("Added ${tag.name} as child of '" + tag_list[temp_int].name + "' which now has ${tag_list[temp_int].children.len} childrens")
+				dom.btree.move_pointer(temp_map[temp_int.str()])
+				temp_map[index.str()] = dom.btree.add_children(tag) //segfault
+				dom.print_debug("Added ${tag.name} as child of '" + tag_list[temp_int].name + "' which now has ${dom.btree.get_children().len} childrens")
 			} else {
 				//dom.new_root(tag)
 				stack.push(root_index)
