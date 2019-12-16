@@ -83,6 +83,7 @@ fn (dom mut DocumentObjectModel) construct(tag_list []Tag) {
 	mut temp_int := C.NULL
 	mut temp_string := ""
 	mut stack := Stack{}
+	dom.btree = BTree{}
 	dom.root = tag_list[1]
 	temp_map["1"] = dom.btree.add_children(tag_list[1])
 	stack.push(1)

@@ -48,20 +48,13 @@ struct BTree {
 }
 
 fn (btree mut BTree) add_children(tag Tag) int {
-	println("OK_1")
 	btree.all_tags << tag
-	println("OK_2")
 	if btree.all_tags.len > 1 {
-		println("OK_3")
 		for btree.childrens.len <= btree.node_pointer {		
-			println("OK_4")
 			btree.childrens << []int
-			println("OK_5 >> " + btree.childrens.len.str())
 		}
-		println("OK_6")
 		mut temp_array := btree.childrens[btree.node_pointer]
 		temp_array << btree.all_tags.len - 1
-		println("OK_7")
 	}
 	return btree.all_tags.len - 1
 }
