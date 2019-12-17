@@ -31,6 +31,7 @@ pub struct Parser {
 		dom DocumentObjectModel
 		lexycal_attributes LexycalAttributes = LexycalAttributes{}
 		filename string = "direct-parse"
+		initialized bool = false
 		tags []Tag
 		debug_file os.File
 }
@@ -93,7 +94,15 @@ fn blank_string(data string) bool {
 	return count == data.len
 }
 
+fn (parser mut Parser) initialize_all() {
+	parser.dom = DocumentObjectModel{}
+	parser.dom.close_tags["/!document"] = true
+	parser.lexycal_attributes.current_tag = Tag{}
+	parser.initialized = true
+}
+
 pub fn (parser mut Parser) split_parse(data string) {
+	if !parser.initialized {parser.initialize_all()}
 	for word in data {
 		mut is_quotation := false
 		if word == 34 || word == 39 {is_quotation = true} // " or '
@@ -189,20 +198,20 @@ pub fn (parser mut Parser) split_parse(data string) {
 			}
 			if parser.builder_str() == "!--" { parser.lexycal_attributes.open_comment = true }
 		} else if word == 60 { //open tag '<'
-			mut tags := parser.tags //[]Tag//
 			temp_string := parser.builder_str()
 			if parser.lexycal_attributes.lexeme_builder.len >= 1 {
 				if parser.lexycal_attributes.current_tag.name.len > 1 && parser.lexycal_attributes.current_tag.name[0] == 47 && !blank_string(temp_string) {
-					tags << Tag{name: "text", content: temp_string}
+					parser.tags << Tag{name: "text", content: temp_string}
 				} else {
 					parser.lexycal_attributes.current_tag.content = temp_string //verify later who has this content
 				}
 			}
 			//parser.print_debug(parser.lexycal_attributes.current_tag.str())
 			parser.lexycal_attributes.lexeme_builder = ""
-			tags << parser.lexycal_attributes.current_tag
+			if parser.lexycal_attributes.current_tag.name.len > 0 || parser.lexycal_attributes.current_tag.content.len > 0 {
+				parser.tags << parser.lexycal_attributes.current_tag
+			}
 			parser.lexycal_attributes.current_tag = Tag{}
-			parser.tags = tags
 			parser.lexycal_attributes.open_tag = true
 		} else {
 			parser.lexycal_attributes.write_lexeme(word.str())
@@ -211,6 +220,7 @@ pub fn (parser mut Parser) split_parse(data string) {
 }
 
 pub fn (parser mut Parser) parse_html(data string, is_file bool) {
+	if !parser.initialized {parser.initialize_all()}
 	mut lines := []string
 	if is_file {
 		file_lines := os.read_lines(data) or {

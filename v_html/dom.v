@@ -111,7 +111,7 @@ fn (dom mut DocumentObjectModel) construct(tag_list []Tag) {
 			temp_int = stack.peek()
 			if !stack.is_null(temp_int) {
 				dom.btree.move_pointer(temp_map[temp_int.str()])
-				temp_map[index.str()] = dom.btree.add_children(tag) //segfault
+				temp_map[index.str()] = dom.btree.add_children(tag)
 				dom.print_debug("Added ${tag.name} as child of '" + tag_list[temp_int].name + "' which now has ${dom.btree.get_children().len} childrens")
 			} else {
 				//dom.new_root(tag)

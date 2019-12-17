@@ -53,8 +53,7 @@ fn (btree mut BTree) add_children(tag Tag) int {
 		for btree.childrens.len <= btree.node_pointer {		
 			btree.childrens << []int
 		}
-		mut temp_array := btree.childrens[btree.node_pointer]
-		temp_array << btree.all_tags.len - 1
+		btree.childrens[btree.node_pointer] << btree.all_tags.len - 1
 	}
 	return btree.all_tags.len - 1
 }
