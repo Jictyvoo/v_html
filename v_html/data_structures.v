@@ -1,7 +1,9 @@
 module v_html
 
+#include <limits.h>
+
 struct Stack {
-	null_element int = C.NULL
+	null_element int = C.INT_MIN
 	mut:
 		elements []int
 		size int = 0

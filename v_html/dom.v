@@ -7,7 +7,7 @@ pub struct DocumentObjectModel {
 		root Tag
 		constructed bool = false
 		btree BTree
-		close_tags map[string]bool = {"/!document": true}
+		close_tags map[string]bool
 		attributes map[string][]string
 		tag_attributes [][]Tag
 		tag_type map[string][]Tag
@@ -79,16 +79,17 @@ fn compare_string(a string, b string) bool { // for some reason == doesn't work
 
 fn (dom mut DocumentObjectModel) construct(tag_list []Tag) {
 	dom.constructed = true
+	dom.close_tags["/!document"] = true
 	mut temp_map := map[string]int
-	mut temp_int := C.NULL
+	mut temp_int := C.INT_MIN
 	mut temp_string := ""
 	mut stack := Stack{}
 	dom.btree = BTree{}
-	dom.root = tag_list[1]
-	temp_map["1"] = dom.btree.add_children(tag_list[1])
-	stack.push(1)
-	root_index := 1
-	for index := 2; index < tag_list.len; index++ {
+	dom.root = tag_list[0]
+	temp_map["0"] = dom.btree.add_children(tag_list[0])
+	stack.push(0)
+	root_index := 0
+	for index := 1; index < tag_list.len; index++ {
 		tag := tag_list[index]
 		dom.print_debug(tag.str())
 		if is_close_tag(tag) {
@@ -103,7 +104,9 @@ fn (dom mut DocumentObjectModel) construct(tag_list []Tag) {
 				temp_int = stack.peek()
 			}
 			temp_int = stack.peek()
-			if !stack.is_null(temp_int) { stack.pop() }
+			if !stack.is_null(temp_int) { temp_int = stack.pop() }
+			else {temp_int = root_index}
+			if stack.is_null(temp_int) { stack.push(root_index) }
 			dom.print_debug("Removed " + temp_string + " -- " + tag_list[temp_int].name)
 		} else if tag.name.len > 0 {
 			dom.add_tag_attribute(tag)

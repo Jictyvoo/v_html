@@ -48,7 +48,7 @@ pub fn (parser mut Parser) add_code_tag(name string) {
 }
 
 fn (parser Parser) builder_str() string {
-	return parser.lexycal_attributes.lexeme_builder
+	return parser.lexycal_attributes.lexeme_builder.to_lower()
 }
 
 fn (parser mut Parser) print_debug(data string) {
