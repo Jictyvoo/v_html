@@ -8,3 +8,7 @@
 *.html
 *.log
 *fns.txt
+
+# Ignored generated files for test
+
+v_html/parse_test

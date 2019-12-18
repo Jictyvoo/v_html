@@ -37,14 +37,14 @@ pub struct Parser {
 }
 
 pub fn (parser mut Parser) add_code_tag(name string) {
-	mut code_tags := parser.lexycal_attributes.code_tags
 	if parser.lexycal_attributes.code_tags.keys().len <= 0 {
-		code_tags["script"] = true code_tags["style"] = true
+		parser.lexycal_attributes.code_tags = map[string]bool
+		parser.lexycal_attributes.code_tags["script"] = true
+		parser.lexycal_attributes.code_tags["style"] = true
 	}
 	if name.len > 0 {
-		code_tags[name] = true
+		parser.lexycal_attributes.code_tags[name] = true
 	}
-	parser.lexycal_attributes.code_tags = code_tags
 }
 
 fn (parser Parser) builder_str() string {
@@ -96,6 +96,7 @@ fn blank_string(data string) bool {
 
 fn (parser mut Parser) initialize_all() {
 	parser.dom = DocumentObjectModel{}
+	parser.add_code_tag("")
 	parser.dom.close_tags["/!document"] = true
 	parser.lexycal_attributes.current_tag = Tag{}
 	parser.initialized = true

@@ -9,6 +9,10 @@ struct Tag {
 		closed bool = false
 }
 
+pub fn (tag Tag) get_content() string {
+	return tag.content
+}
+
 pub fn (tag Tag) str() string {
 	mut to_return := "<${tag.name}"
 	for key in tag.attributes.keys() {
