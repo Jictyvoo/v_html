@@ -101,6 +101,15 @@ fn (parser mut Parser) initialize_all() {
 	parser.initialized = true
 }
 
+fn (parser mut Parser) generate_tag() {
+	if !parser.lexycal_attributes.open_tag {
+		if parser.lexycal_attributes.current_tag.name.len > 0 || parser.lexycal_attributes.current_tag.content.len > 0 {
+			parser.tags << parser.lexycal_attributes.current_tag
+		}
+		parser.lexycal_attributes.current_tag = Tag{}
+	}
+}
+
 pub fn (parser mut Parser) split_parse(data string) {
 	if !parser.initialized {parser.initialize_all()}
 	for word in data {
@@ -181,9 +190,9 @@ pub fn (parser mut Parser) split_parse(data string) {
 					parser.lexycal_attributes.opened_code_type = parser.lexycal_attributes.current_tag.name
 				}
 				//parser.print_debug(parser.lexycal_attributes.current_tag.name)
-			} else if word != 9 && word != 32 && word != 61 { // Tab, space and =
+			} else if word != 9 && word != 32 && word != 61 && word != 10 { // Tab, space, = and \n
 				parser.lexycal_attributes.write_lexeme(word.str())
-			} else {
+			} else if word != 10 {
 				complete_lexeme := parser.builder_str()
 				if parser.lexycal_attributes.current_tag.name == "" {
 					parser.lexycal_attributes.current_tag.name = complete_lexeme 
@@ -208,10 +217,7 @@ pub fn (parser mut Parser) split_parse(data string) {
 			}
 			//parser.print_debug(parser.lexycal_attributes.current_tag.str())
 			parser.lexycal_attributes.lexeme_builder = ""
-			if parser.lexycal_attributes.current_tag.name.len > 0 || parser.lexycal_attributes.current_tag.content.len > 0 {
-				parser.tags << parser.lexycal_attributes.current_tag
-			}
-			parser.lexycal_attributes.current_tag = Tag{}
+			parser.generate_tag()
 			parser.lexycal_attributes.open_tag = true
 		} else {
 			parser.lexycal_attributes.write_lexeme(word.str())
@@ -235,12 +241,21 @@ pub fn (parser mut Parser) parse_html(data string, is_file bool) {
 		parser.lexycal_attributes.line_count++
 		parser.split_parse(line)
 	}
+	parser.generate_tag()
 	parser.dom.debug_file = parser.debug_file
 	parser.dom.construct(parser.tags)
 	//println(parser.close_tags.keys())
 }
 
+pub fn (parser mut Parser) finalize() {
+	parser.generate_tag()
+}
+
+pub fn (parser Parser) get_tags() []Tag {
+	return parser.tags
+}
+
 pub fn (parser mut Parser) get_dom() DocumentObjectModel {
-	if !parser.dom.constructed {parser.dom.construct(parser.tags)}
+	if !parser.dom.constructed {parser.generate_tag() parser.dom.construct(parser.tags)}
 	return parser.dom
 }

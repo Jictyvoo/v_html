@@ -79,7 +79,6 @@ fn compare_string(a string, b string) bool { // for some reason == doesn't work
 
 fn (dom mut DocumentObjectModel) construct(tag_list []Tag) {
 	dom.constructed = true
-	dom.close_tags["/!document"] = true
 	mut temp_map := map[string]int
 	mut temp_int := C.INT_MIN
 	mut temp_string := ""
