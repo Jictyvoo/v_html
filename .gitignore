@@ -12,3 +12,4 @@
 # Ignored generated files for test
 
 v_html/parse_test
+v_html/dom_test

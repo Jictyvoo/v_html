@@ -1,5 +1,7 @@
 module v_html
 
+import http
+
 fn test_split_parse() {
 	mut parser := v_html.Parser{}
 	parser.initialize_all()
@@ -35,4 +37,16 @@ fn test_script_tag() {
 	mut parser := v_html.Parser{}
 	parser.parse_html(temp_html, false)
 	assert parser.get_tags()[2].get_content().len == 101
+}
+
+fn test_download_source() {
+	println("Fetching github data in pastebin")
+	resp := http.get('https://pastebin.com/raw/5snUQgqN') or {
+		println('failed to fetch data from the server')
+		return
+	}
+	println("Finalized fetching, start parsing")
+	mut parser := v_html.Parser{}
+	parser.parse_html(resp.text, false)
+	assert parser.get_tags().len == 2997
 }
