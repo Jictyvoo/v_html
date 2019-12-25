@@ -2,15 +2,6 @@ module v_html
 
 import os
 
-enum TokenType {
-	html_string
-	tag
-	open_tag
-	close_tag
-	open_comment
-	close_comment
-}
-
 struct LexycalAttributes {
 mut:
 	current_tag      Tag

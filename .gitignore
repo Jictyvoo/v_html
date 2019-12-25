@@ -13,3 +13,4 @@
 
 v_html/parse_test
 v_html/dom_test
+v_html/xpath_test
