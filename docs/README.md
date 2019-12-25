@@ -32,7 +32,7 @@ A: For debuging purposes
 
 A: Is a workaround, because to make it to be finish fast, use this method, to not worry with address manipulation and addresses. Maybe in future child tag arrays ([]&Tag) will be added again to be more easily to use
 
-**Q: Will be like `XPath` in future?**
+**Q: Will be something like `XPath` in future?**
 
 A: Maybe... But before that, the basic dom search need to be finished and improved
 

@@ -1,12 +1,11 @@
 module v_html
 
 #include <limits.h>
-
 struct Stack {
-	null_element int = C.INT_MIN
-	mut:
-		elements []int
-		size int = 0
+	null_element int=C.INT_MIN
+mut:
+	elements     []int
+	size         int=0
 }
 
 fn (stack Stack) is_null(data int) bool {
@@ -36,23 +35,24 @@ fn (stack mut Stack) pop() int {
 fn (stack mut Stack) push(item int) {
 	if stack.elements.len > stack.size {
 		stack.elements[stack.size] = item
-	} else {
+	}
+	else {
 		stack.elements << item
 	}
 	stack.size++
 }
 
 struct BTree {
-	mut:
-		all_tags []Tag
-		node_pointer int = 0
-		childrens [][]int
+mut:
+	all_tags     []Tag
+	node_pointer int=0
+	childrens    [][]int
 }
 
 fn (btree mut BTree) add_children(tag Tag) int {
 	btree.all_tags << tag
 	if btree.all_tags.len > 1 {
-		for btree.childrens.len <= btree.node_pointer {		
+		for btree.childrens.len <= btree.node_pointer {
 			btree.childrens << []int
 		}
 		btree.childrens[btree.node_pointer] << btree.all_tags.len - 1
