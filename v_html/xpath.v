@@ -127,5 +127,5 @@ pub fn (xpath mut XPath) search(queue string) []Tag {
 		}
 	}
 	println(xpath.search_order)
-	return []
+	return xpath.found_tags
 }

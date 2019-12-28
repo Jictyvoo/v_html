@@ -32,14 +32,15 @@ A: For debuging purposes
 
 A: Is a workaround, because to make it to be finish fast, use this method, to not worry with address manipulation and addresses. Maybe in future child tag arrays ([]&Tag) will be added again to be more easily to use
 
-**Q: Will be something like `XPath` in future?**
+**Q: Will be something like `XPath`?**
 
-A: Maybe... But before that, the basic dom search need to be finished and improved
+A: Like XPath yes. Exactly equal to it, no.
 
 ## To-do
 
 * Improve default search in dom
 * Finish dom test
+* Add in btree info about who's the parent of the current node
 * Fix parser with github html (have some weird things, dom is incorrect while removing things from it)
 * In other branch, try to use add_child with tag address
 * Maybe more
@@ -66,6 +67,14 @@ A: Maybe... But before that, the basic dom search need to be finished and improv
 
 * push elements that have a close tag into stack
 * remove elements from stack
-* create a new document root if have some syntax error
+* create a new document root if have some syntax error (deleted)
 * search tags in B-tree by attributes
 * search tags in B-tree by tag type
+
+### XPath
+
+* receive search string and identify what to search and when
+* start search by root
+* start search by tag name
+* start search by attribute name
+* get all tags from document

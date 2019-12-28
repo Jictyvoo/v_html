@@ -16,5 +16,5 @@ fn main() {
 	parser.parse_html("github_test.html", true)
 	mut xpath := v_html.XPath{}
 	xpath.set_dom(parser.get_dom())
-	xpath.search("/catalog/cd/price")
+	println(xpath.search("/catalog/cd/price"))
 }
