@@ -326,3 +326,10 @@ pub fn (parser mut Parser) get_dom() DocumentObjectModel {
 	}
 	return parser.dom
 }
+
+pub fn (parser mut Parser) get_xpath() XPath {
+	dom := parser.get_dom()
+	return XPath{
+		dom: dom
+	}
+}

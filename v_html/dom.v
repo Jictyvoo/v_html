@@ -190,3 +190,7 @@ pub fn (dom DocumentObjectModel) get_root() Tag {
 pub fn (dom DocumentObjectModel) get_all_tags() []Tag {
 	return dom.all_tags
 }
+
+pub fn (dom DocumentObjectModel) get_xpath() XPath {
+	return XPath{dom: dom}
+}

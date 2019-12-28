@@ -14,7 +14,6 @@ fn main() {
 	mut parser := v_html.Parser{debug_file: d_file}
 	parser.add_code_tag("")
 	parser.parse_html("github_test.html", true)
-	mut xpath := v_html.XPath{}
-	xpath.set_dom(parser.get_dom())
+	mut xpath := parser.get_xpath()
 	println(xpath.search("/catalog/cd/price"))
 }
