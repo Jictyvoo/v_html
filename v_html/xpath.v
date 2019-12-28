@@ -19,36 +19,57 @@ struct Token {
 	class SearchType
 }
 
-struct XPath {
+pub fn (token Token) str() string {
+	return "${token.lexeme}: ${token.class}"
+}
+
+pub struct XPath {
 mut:
 	dom DocumentObjectModel
+	found_tags []Tag
 	search_order []Token
 }
 
-fn (xpath mut XPath) set_dom(dom DocumentObjectModel) {
+pub fn (xpath mut XPath) set_dom(dom DocumentObjectModel) {
 	xpath.dom = dom
 }
 
 fn classify_has(value string) SearchType {
-	if value.len > 0 && value[0] >= 48 && value[0] <= 57 {
-		return .position
-	} else if value.len > 0 && value == "last()" {
-		return .last
-	} else if value.len > 0 && value == "@*" {
-		return .has_attribute
-	} else if value.len > 0 && value[0] == 64 /*@*/ {
-		return .attribute
-	} // now verify if has = and return element or has_compare
-	return .element
+	if value.len > 0 {
+		if value[0] >= 48 && value[0] <= 57 {
+			return .position
+		} else if value == "last()" {
+			return .last
+		} else if value == "@*" {
+			return .has_attribute
+		} else {
+			operators := [">", "<", ">=", "<=", "=", "!="]
+			for operator in operators {
+				if value.contains(operator) {
+					return .has_compare
+				}
+			}  
+		}
+	}
+	return .has
 }
 
 fn classify_identifier(value string) SearchType {
-	if value.len > 0 && value[0] == 42/*'*'*/ {
+	if value.len > 0 && value[0] == 42 /*'*'*/ {
 		return .unknown
 	} else if value.len > 0 && value[0] == 64 /*@*/ {
 		return .attribute
 	}
 	return .element
+}
+
+fn (xpath mut XPath) add_search(lexeme string, search_type int) {
+	search_enum := match search_type {
+		1 { SearchType.absolute_path }
+		else { .all_document }
+	}
+	xpath.search_order << Token{lexeme: "/", class: search_enum}
+	xpath.search_order << Token{lexeme: lexeme, class: classify_identifier(lexeme)}
 }
 
 fn (xpath mut XPath) how_search(queue string) {
@@ -65,25 +86,46 @@ fn (xpath mut XPath) how_search(queue string) {
 		} else if word != 47 && word != 91 && word != 32 {
 			lexeme += word.str()
 		} else {
+			if word == 91 { opened_has = true }
+			else if lexeme.len > 0 && search_type >= 0 && search_type <= 2 {
+				xpath.add_search(lexeme, search_type)
+				search_type = 0
+			}
 			if word == 47 {
 				search_type++
 			}
-			if lexeme.len > 0 && search_type > 0 && search_type <= 2 {
-				search_enum := match search_type {
-					1 { SearchType.absolute_path }
-					else { .all_document }
-				}
-				xpath.search_order << Token{lexeme: "/", class: search_enum}
-				xpath.search_order << Token{lexeme: lexeme, class: classify_identifier(lexeme)}
-			}
-
-			if word != 91 { opened_has = true }
 			lexeme = ""
 		}
 	}
+	xpath.add_search(lexeme, search_type)
 }
 
-fn (xpath mut XPath) search(queue string) []Tag {
+fn (xpath XPath) search_childrens(name string, class SearchType) {
+	println("Searching for childrens with name $name")
+}
+
+pub fn (xpath mut XPath) search(queue string) []Tag {
 	xpath.how_search(queue)
+	xpath.found_tags = []
+	if xpath.search_order.len >= 2 {
+		if xpath.search_order[0].class == .all_document {
+			if xpath.search_order[1].class == .unknown {
+				xpath.found_tags = xpath.dom.get_all_tags()
+			} else if xpath.search_order[1].class == .element {
+				xpath.found_tags = xpath.dom.get_by_tag(xpath.search_order[1].lexeme)
+			} else if xpath.search_order[1].class == .attribute {
+				xpath.found_tags = xpath.dom.get_by_attribute(xpath.search_order[1].lexeme)
+			}
+		} else {
+			xpath.found_tags << xpath.dom.get_root()
+			xpath.search_childrens(xpath.search_order[1].lexeme, xpath.search_order[1].class)
+		}
+		for index := 3; index < xpath.search_order.len; index += 2 {
+			if xpath.search_order[index - 1].class == .absolute_path {
+				println("Search by absolute path")
+			}
+		}
+	}
+	println(xpath.search_order)
 	return []
 }

@@ -13,8 +13,8 @@ fn main() {
 	d_file := os.create("debug.log") or {eprintln('failed to read the file') return}
 	mut parser := v_html.Parser{debug_file: d_file}
 	parser.add_code_tag("")
-	parser.parse_html("github_test.html", true)//*/
-	//parser.parse_html(resp.text, false)
-	/*dom := parser.get_dom()
-	println(dom.get_root())*/
+	parser.parse_html("github_test.html", true)
+	mut xpath := v_html.XPath{}
+	xpath.set_dom(parser.get_dom())
+	xpath.search("/catalog/cd/price")
 }

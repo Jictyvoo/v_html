@@ -7,6 +7,8 @@ mut:
 	root           Tag
 	constructed    bool=false
 	btree          BTree
+	all_tags       []Tag
+	all_attributes map[string][]Tag
 	close_tags     map[string]bool
 	attributes     map[string][]string
 	tag_attributes [][]Tag
@@ -75,6 +77,15 @@ fn (dom mut DocumentObjectModel) add_tag_by_type(tag Tag) {
 	dom.tag_type[tag_name] << tag
 }
 
+fn (dom mut DocumentObjectModel) add_tag_by_attribute(tag Tag) {
+	for attribute_name in tag.attributes.keys() {
+		if !attribute_name in dom.all_attributes {
+			dom.all_attributes[attribute_name] = []
+		}
+		dom.all_attributes[attribute_name] << tag
+	}
+}
+
 fn compare_string(a string, b string) bool {
 	/* for some reason == doesn't work */
 	if a.len != b.len {
@@ -93,11 +104,10 @@ fn (dom mut DocumentObjectModel) construct(tag_list []Tag) {
 	mut temp_map := map[string]int
 	mut temp_int := C.INT_MIN
 	mut temp_string := ''
-	mut stack := Stack{
-	}
-	dom.btree = BTree{
-	}
+	mut stack := Stack{}
+	dom.btree = BTree{}
 	dom.root = tag_list[0]
+	dom.all_tags = []
 	temp_map['0'] = dom.btree.add_children(tag_list[0])
 	stack.push(0)
 	root_index := 0
@@ -131,6 +141,7 @@ fn (dom mut DocumentObjectModel) construct(tag_list []Tag) {
 		else if tag.name.len > 0 {
 			dom.add_tag_attribute(tag)
 			dom.add_tag_by_type(tag)
+			dom.all_tags << tag
 			temp_int = stack.peek()
 			if !stack.is_null(temp_int) {
 				dom.btree.move_pointer(temp_map[temp_int.str()])
@@ -153,7 +164,7 @@ fn (dom mut DocumentObjectModel) construct(tag_list []Tag) {
 
 }
 
-pub fn (dom mut DocumentObjectModel) get_by_attributes(name string, value string) []Tag {
+pub fn (dom mut DocumentObjectModel) get_by_attribute_value(name string, value string) []Tag {
 	location := dom.where_is(name, value)
 	return dom.tag_attributes[location]
 }
@@ -165,6 +176,17 @@ pub fn (dom DocumentObjectModel) get_by_tag(name string) []Tag {
 	return []
 }
 
+pub fn (dom DocumentObjectModel) get_by_attribute(name string) []Tag {
+	if name in dom.all_attributes {
+		return dom.all_attributes[name]
+	}
+	return []
+}
+
 pub fn (dom DocumentObjectModel) get_root() Tag {
 	return dom.root
+}
+
+pub fn (dom DocumentObjectModel) get_all_tags() []Tag {
+	return dom.all_tags
 }
