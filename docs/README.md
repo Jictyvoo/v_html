@@ -18,14 +18,19 @@ This function is called passing a filename or a complete html data string to it
 
 **get_by_attribute_value(name string, value string) []Tag**
 This function retuns a Tag array with all tags in document that have a attribute with given name and given value
+
 **get_by_tag(name string) []Tag**
 This function retuns a Tag array with all tags in document that have a name with the given value
+
 **get_by_attribute(name string) []Tag**
 This function retuns a Tag array with all tags in document that have a attribute with given name
+
 **get_root() Tag**
 This function returns the root Tag
+
 **get_all_tags() []Tag**
 This function returns all important tags, removing close tags
+
 **get_xpath() XPath**
 This function returns a xpath based on it internal tree
 
