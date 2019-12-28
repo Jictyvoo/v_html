@@ -71,18 +71,24 @@ fn (dom mut DocumentObjectModel) add_tag_attribute(tag Tag) {
 
 fn (dom mut DocumentObjectModel) add_tag_by_type(tag Tag) {
 	tag_name := tag.name
-	if !tag_name in dom.tag_type {
-		dom.tag_type[tag_name] = []
+	if !(tag_name in dom.tag_type) {
+		dom.tag_type[tag_name] = [tag]
+	} else {
+		mut temp_array := dom.tag_type[tag_name]
+		temp_array << tag
+		dom.tag_type[tag_name] = temp_array
 	}
-	dom.tag_type[tag_name] << tag
 }
 
 fn (dom mut DocumentObjectModel) add_tag_by_attribute(tag Tag) {
 	for attribute_name in tag.attributes.keys() {
-		if !attribute_name in dom.all_attributes {
-			dom.all_attributes[attribute_name] = []
+		if !(attribute_name in dom.all_attributes) {
+			dom.all_attributes[attribute_name] = [tag]
+		} else {
+			mut temp_array := dom.all_attributes[attribute_name]
+			temp_array << tag
+			dom.all_attributes[attribute_name] = temp_array
 		}
-		dom.all_attributes[attribute_name] << tag
 	}
 }
 
@@ -107,7 +113,7 @@ fn (dom mut DocumentObjectModel) construct(tag_list []Tag) {
 	mut stack := Stack{}
 	dom.btree = BTree{}
 	dom.root = tag_list[0]
-	dom.all_tags = []
+	dom.all_tags = [tag_list[0]]
 	temp_map['0'] = dom.btree.add_children(tag_list[0])
 	stack.push(0)
 	root_index := 0
@@ -140,6 +146,7 @@ fn (dom mut DocumentObjectModel) construct(tag_list []Tag) {
 		}
 		else if tag.name.len > 0 {
 			dom.add_tag_attribute(tag)
+			dom.add_tag_by_attribute(tag)
 			dom.add_tag_by_type(tag)
 			dom.all_tags << tag
 			temp_int = stack.peek()

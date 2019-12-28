@@ -3,6 +3,12 @@ module main
 //import http
 import os
 import v_html
+
+/*
+#flag -O3
+#flag --save-temps
+*/
+
 fn main() {
 	/*println("Fetching myanimelist data")
 	resp := http.get('https://myanimelist.net/manga.php') or {

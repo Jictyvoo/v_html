@@ -47,6 +47,7 @@ mut:
 	all_tags     []Tag
 	node_pointer int=0
 	childrens    [][]int
+	parents      []int
 }
 
 fn (btree mut BTree) add_children(tag Tag) int {
@@ -56,12 +57,20 @@ fn (btree mut BTree) add_children(tag Tag) int {
 			btree.childrens << []int
 		}
 		btree.childrens[btree.node_pointer] << btree.all_tags.len - 1
+		for btree.parents.len < btree.all_tags.len {
+			btree.parents << 0
+		}
+		btree.parents[btree.all_tags.len - 1] = btree.node_pointer
 	}
 	return btree.all_tags.len - 1
 }
 
 fn (btree BTree) get_children() []int {
 	return btree.childrens[btree.node_pointer]
+}
+
+fn (btree BTree) get_parent() int {
+	return btree.parents[btree.node_pointer]
 }
 
 fn (btree BTree) get_stored() Tag {

@@ -6,13 +6,33 @@ A HTML parser made in V
 
 If description below isn't enought, see test files
 
-### split_parse(data string)
+### Parser
 
+**split_parse(data string)**
 This functions is the main function called by parse method to fragment parse your HTML
 
-### parse_html(data string, is_file bool)
-
+**parse_html(data string, is_file bool)**
 This function is called passing a filename or a complete html data string to it
+
+### DocumentObjectModel
+
+**get_by_attribute_value(name string, value string) []Tag**
+This function retuns a Tag array with all tags in document that have a attribute with given name and given value
+**get_by_tag(name string) []Tag**
+This function retuns a Tag array with all tags in document that have a name with the given value
+**get_by_attribute(name string) []Tag**
+This function retuns a Tag array with all tags in document that have a attribute with given name
+**get_root() Tag**
+This function returns the root Tag
+**get_all_tags() []Tag**
+This function returns all important tags, removing close tags
+**get_xpath() XPath**
+This function returns a xpath based on it internal tree
+
+### XPath
+
+**search(queue string) []Tag**
+returns a tag array based on queue string given to function (it searchs the elements in dom and it's btree)
 
 ## Some question that can appear
 
@@ -38,16 +58,15 @@ A: Like XPath yes. Exactly equal to it, no.
 
 ## To-do
 
-* Improve default search in dom
+* Finish XPath search
 * Finish dom test
-* Add in btree info about who's the parent of the current node
 * Fix parser with github html (have some weird things, dom is incorrect while removing things from it)
 * In other branch, try to use add_child with tag address
 * Maybe more
 
 ### Need verification
 
-* None for now
+* Add in btree info about who's the parent of the current node
 
 ## Done
 

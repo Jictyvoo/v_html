@@ -18,7 +18,67 @@ fn create_xpath() v_html.XPath {
 	return xpath
 }
 
+fn test_entire_document_search() {
+	xpath := create_xpath()
+	xpath.search("//cd")
+}
+
 fn test_subelement_search() {
 	xpath := create_xpath()
 	xpath.search("/catalog/cd/price")
+}
+
+fn test_subelement_unknown_search() {
+	xpath := create_xpath()
+	xpath.search("/catalog/cd/*")
+}
+
+fn test_unknown_parent_search() {
+	xpath := create_xpath()
+	xpath.search("/catalog/*/price")
+}
+
+fn test_two_ancients_search() {
+	xpath := create_xpath()
+	xpath.search("/*/*/price")
+}
+
+fn test_all_document_search() {
+	xpath := create_xpath()
+	xpath.search("//*")
+}
+
+fn test_single_element_search() {
+	xpath := create_xpath()
+	xpath.search("/catalog/cd[1]")
+}
+
+fn test_last_element_search() {
+	xpath := create_xpath()
+	xpath.search("/catalog/cd[last()]")
+}
+
+fn test_have_subelement_search() {
+	xpath := create_xpath()
+	xpath.search("/catalog/cd[price]")
+}
+
+fn test_have_subelement_value_search() {
+	xpath := create_xpath()
+	xpath.search("/catalog/cd[price=10.90]")
+}
+
+fn test_attribute_search() {
+	xpath := create_xpath()
+	xpath.search("//@country")
+}
+
+fn test_have_attribute_named_search() {
+	xpath := create_xpath()
+	xpath.search("//cd[@country]")
+}
+
+fn test_subelement_have_attribute_search() {
+	xpath := create_xpath()
+	xpath.search("//cd[@*]")
 }
