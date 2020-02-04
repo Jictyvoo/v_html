@@ -1,4 +1,4 @@
-module v_html
+module html
 
 import os
 

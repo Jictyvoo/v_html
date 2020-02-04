@@ -1,4 +1,4 @@
-module v_html
+module html
 
 #include <limits.h>
 struct Stack {
@@ -54,7 +54,7 @@ fn (btree mut BTree) add_children(tag Tag) int {
 	btree.all_tags << tag
 	if btree.all_tags.len > 1 {
 		for btree.childrens.len <= btree.node_pointer {
-			btree.childrens << []int
+			btree.childrens << []
 		}
 		btree.childrens[btree.node_pointer] << btree.all_tags.len - 1
 		for btree.parents.len < btree.all_tags.len {

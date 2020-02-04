@@ -1,8 +1,8 @@
 module main
 
-//import http
+//import net.http
 import os
-import v_html
+import html
 
 /*
 #flag -O3
@@ -17,9 +17,9 @@ fn main() {
 	}
 	println("Finalized fetching, start parsing")*/
 	d_file := os.create("debug.log") or {eprintln('failed to read the file') return}
-	mut parser := v_html.Parser{debug_file: d_file}
+	mut parser := html.Parser{debug_file: d_file}
 	parser.add_code_tag("")
 	parser.parse_html("github_test.html", true)
-	mut xpath := parser.get_xpath()
-	println(xpath.search("/catalog/cd/price"))
+	/*mut xpath := parser.get_xpath()
+	println(xpath.search("/catalog/cd/price"))*/
 }

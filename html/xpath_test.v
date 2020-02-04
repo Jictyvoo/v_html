@@ -1,4 +1,4 @@
-module v_html
+module html
 
 const (
 	test_xml = '<?xml version="1.0" encoding="ISO-8859-1"?>
@@ -9,8 +9,8 @@ const (
   </catalog>'
 )
 
-fn create_xpath() v_html.XPath {
-	mut parser := v_html.Parser{}
+fn create_xpath() html.XPath {
+	mut parser := html.Parser{}
 	parser.parse_html(test_xml, false)
 	dom := parser.get_dom()
 	mut xpath := XPath{}

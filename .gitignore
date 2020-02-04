@@ -11,6 +11,6 @@
 
 # Ignored generated files for test
 
-v_html/parse_test
-v_html/dom_test
-v_html/xpath_test
+html/parse_test
+html/dom_test
+html/xpath_test

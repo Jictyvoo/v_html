@@ -1,4 +1,4 @@
-module v_html
+module html
 
 import os
 
@@ -61,7 +61,7 @@ fn (dom mut DocumentObjectModel) add_tag_attribute(tag Tag) {
 		temp_string := tag.attributes[attribute_name]
 		location := dom.where_is(temp_string, attribute_name)
 		for dom.tag_attributes.len <= location {
-			dom.tag_attributes << []Tag
+			dom.tag_attributes << []
 		}
 		mut temp_array := dom.tag_attributes[location]
 		temp_array << tag

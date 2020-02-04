@@ -1,4 +1,4 @@
-module v_html
+module html
 
 enum SearchType {
 	absolute_path /* '/' */

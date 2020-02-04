@@ -1,4 +1,4 @@
-module v_html
+module html
 
 fn generate_temp_html() string {
 	mut temp_html := "<!doctype html><html><head><title>Giant String</title></head><body>"
@@ -10,8 +10,8 @@ fn generate_temp_html() string {
 	return temp_html
 }
 
-fn generate_dom(temp_html string) v_html.DocumentObjectModel {
-	mut parser := v_html.Parser{}
+fn generate_dom(temp_html string) html.DocumentObjectModel {
+	mut parser := html.Parser{}
 	parser.parse_html(temp_html, false)
 	dom := parser.get_dom()
 	return dom
