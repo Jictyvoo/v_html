@@ -186,7 +186,7 @@ pub fn (parser mut Parser) split_parse(data string) {
 				parser.lexycal_attributes.write_lexeme(word.str())
 				temp_lexeme := parser.builder_str()
 				if parser.lexycal_attributes.current_tag.last_attribute != '' {
-					parser.lexycal_attributes.current_tag.attributes[parser.lexycal_attributes.current_tag.last_attribute] = temp_lexeme
+					parser.lexycal_attributes.current_tag.attributes[parser.lexycal_attributes.current_tag.last_attribute] = temp_lexeme.substr(1, temp_lexeme.len - 1)
 					/*parser.print_debug(parser.lexycal_attributes.current_tag.last_attribute + " = " + temp_lexeme)*/
 
 					parser.lexycal_attributes.current_tag.last_attribute = ''
