@@ -20,6 +20,8 @@ fn main() {
 	mut parser := html.Parser{debug_file: d_file}
 	parser.add_code_tag("")
 	parser.parse_html("github_test.html", true)
+	mut dom := parser.get_dom()
+	dom.get_by_attribute_value("id", "name_0")
 	/*mut xpath := parser.get_xpath()
 	println(xpath.search("/catalog/cd/price"))*/
 }

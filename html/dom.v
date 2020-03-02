@@ -11,7 +11,7 @@ mut:
 	all_attributes map[string][]Tag
 	close_tags     map[string]bool
 	attributes     map[string][]string
-	tag_attributes [][]Tag
+	tag_attributes map[string][][]Tag
 	tag_type       map[string][]Tag
 	debug_file     os.File
 }
@@ -58,14 +58,22 @@ fn (dom mut DocumentObjectModel) where_is(item_name string, attribute_name strin
 
 fn (dom mut DocumentObjectModel) add_tag_attribute(tag Tag) {
 	for attribute_name in tag.attributes.keys() {
-		temp_string := tag.attributes[attribute_name]
-		location := dom.where_is(temp_string, attribute_name)
-		for dom.tag_attributes.len <= location {
-			dom.tag_attributes << []
+		attribute_value := tag.attributes[attribute_name]
+		location := dom.where_is(attribute_value, attribute_name)
+		if !(attribute_name in dom.tag_attributes) {
+			dom.tag_attributes[attribute_name] = []
 		}
-		mut temp_array := dom.tag_attributes[location]
+		for {
+			mut temp_array := dom.tag_attributes[attribute_name]
+			temp_array << []
+			dom.tag_attributes[attribute_name] = temp_array
+			if location < dom.tag_attributes[attribute_name].len + 1 {
+				break
+			}
+		}
+		mut temp_array := dom.tag_attributes[attribute_name][location]
 		temp_array << tag
-		dom.tag_attributes[location] = temp_array
+		dom.tag_attributes[attribute_name][location] = temp_array
 	}
 }
 
@@ -172,8 +180,11 @@ fn (dom mut DocumentObjectModel) construct(tag_list []Tag) {
 }
 
 pub fn (dom mut DocumentObjectModel) get_by_attribute_value(name string, value string) []Tag {
-	location := dom.where_is(name, value)
-	return dom.tag_attributes[location]
+	location := dom.where_is(value, name)
+	if dom.tag_attributes[name].len > location {
+		return dom.tag_attributes[name][location]
+	}
+	return []
 }
 
 pub fn (dom DocumentObjectModel) get_by_tag(name string) []Tag {

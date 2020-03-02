@@ -48,5 +48,5 @@ fn test_download_source() {
 	println("Finalized fetching, start parsing")
 	mut parser := html.Parser{}
 	parser.parse_html(resp.text, false)
-	assert parser.get_tags().len == 2997
+	assert parser.get_tags().len == 2244
 }

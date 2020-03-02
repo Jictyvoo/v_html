@@ -101,6 +101,7 @@ fn blank_string(data string) bool {
 
 fn (parser mut Parser) initialize_all() {
 	parser.dom = DocumentObjectModel{
+		debug_file: parser.debug_file
 	}
 	parser.add_code_tag('')
 	parser.dom.close_tags['/!document'] = true
