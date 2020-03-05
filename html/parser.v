@@ -131,16 +131,10 @@ pub fn (parser mut Parser) split_parse(data string) {
 		}
 
 		string_code := match word {
-			34{
-				1
-			}/*"*/
-
-			39{
-				2
-			}/*'*/
-
-			else {
-				0}}
+			34 {1}/*"*/
+			39 {2}/*'*/
+			else {0}
+		}
 		if parser.lexycal_attributes.open_code {
 			/*here will verify all needed to know if open_code finishes and string in code*/
 			parser.lexycal_attributes.write_lexeme(word.str())

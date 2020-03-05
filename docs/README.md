@@ -64,9 +64,8 @@ A: Like XPath yes. Exactly equal to it, no.
 ## To-do
 
 * Finish XPath search
-* Finish dom test
 * Fix parser with github html (have some weird things, dom is incorrect while removing things from it)
-* In other branch, try to use add_child with tag address
+* try to use add_child with tag address
 * Maybe more
 
 ### Need verification
@@ -94,6 +93,7 @@ A: Like XPath yes. Exactly equal to it, no.
 * create a new document root if have some syntax error (deleted)
 * search tags in B-tree by attributes
 * search tags in B-tree by tag type
+* finish dom test
 
 ### XPath
 
