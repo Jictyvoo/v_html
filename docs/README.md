@@ -64,13 +64,12 @@ A: Like XPath yes. Exactly equal to it, no.
 ## To-do
 
 * Finish XPath search
-* Fix parser with github html (have some weird things, dom is incorrect while removing things from it)
-* try to use add_child with tag address
 * Maybe more
 
 ### Need verification
 
 * Add in btree info about who's the parent of the current node
+* Fix parser with github html (have some weird things, dom is incorrect while removing things from it)
 
 ## Done
 

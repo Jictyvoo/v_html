@@ -66,7 +66,7 @@ fn classify_identifier(value string) SearchType {
 fn (xpath mut XPath) add_search(lexeme string, search_type int) {
 	search_enum := match search_type {
 		1 { SearchType.absolute_path }
-		else { .all_document }
+		else { SearchType.all_document }
 	}
 	xpath.search_order << Token{lexeme: "/", class: search_enum}
 	xpath.search_order << Token{lexeme: lexeme, class: classify_identifier(lexeme)}
