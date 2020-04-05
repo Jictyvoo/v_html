@@ -126,6 +126,8 @@ pub fn (xpath mut XPath) search(queue string) []Tag {
 			}
 		}
 	}
-	println(xpath.search_order)
+	for item in xpath.search_order {
+		println(item)
+	}
 	return xpath.found_tags
 }
