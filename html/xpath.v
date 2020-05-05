@@ -73,7 +73,7 @@ fn (xpath mut XPath) add_search(lexeme string, search_type int) {
 }
 
 fn (xpath mut XPath) how_search(queue string) {
-	xpath.search_order = []
+	xpath.search_order = []Token{}
 	mut search_type := 0
 	mut opened_has := false
 	mut lexeme := ""
@@ -106,7 +106,7 @@ fn (xpath XPath) search_childrens(name string, class SearchType) {
 
 pub fn (xpath mut XPath) search(queue string) []Tag {
 	xpath.how_search(queue)
-	xpath.found_tags = []
+	xpath.found_tags = []Tag{}
 	if xpath.search_order.len >= 2 {
 		if xpath.search_order[0].class == .all_document {
 			if xpath.search_order[1].class == .unknown {

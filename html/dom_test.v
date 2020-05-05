@@ -11,7 +11,7 @@ fn generate_temp_html() string {
 }
 
 fn generate_dom(temp_html string) DocumentObjectModel {
-	mut parser := html.Parser{}
+	mut parser := Parser{}
 	parser.parse_html(temp_html, false)
 	dom := parser.get_dom()
 	return dom

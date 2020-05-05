@@ -2,6 +2,7 @@
 *.exe
 *.so
 *.out
+*.out.c
 ./main
 
 # Ignoring test files

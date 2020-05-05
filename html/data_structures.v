@@ -2,10 +2,10 @@ module html
 
 #include <limits.h>
 struct Stack {
-	null_element int=C.INT_MIN
+	null_element int = C.INT_MIN
 mut:
 	elements     []int
-	size         int=0
+	size         int = 0
 }
 
 fn (stack Stack) is_null(data int) bool {
@@ -23,7 +23,7 @@ fn (stack Stack) peek() int {
 	return stack.null_element
 }
 
-fn (stack mut Stack) pop() int {
+fn (mut stack Stack) pop() int {
 	mut to_return := stack.null_element
 	if !stack.is_empty() {
 		to_return = stack.elements[stack.size - 1]
@@ -32,11 +32,10 @@ fn (stack mut Stack) pop() int {
 	return to_return
 }
 
-fn (stack mut Stack) push(item int) {
+fn (mut stack Stack) push(item int) {
 	if stack.elements.len > stack.size {
 		stack.elements[stack.size] = item
-	}
-	else {
+	} else {
 		stack.elements << item
 	}
 	stack.size++
@@ -45,20 +44,25 @@ fn (stack mut Stack) push(item int) {
 struct BTree {
 mut:
 	all_tags     []Tag
-	node_pointer int=0
+	node_pointer int = 0
 	childrens    [][]int
 	parents      []int
 }
 
-fn (btree mut BTree) add_children(tag Tag) int {
+fn (mut btree BTree) add_children(tag Tag) int {
 	btree.all_tags << tag
 	if btree.all_tags.len > 1 {
 		for btree.childrens.len <= btree.node_pointer {
-			btree.childrens << []
+			//println("${btree.childrens.len} <= ${btree.node_pointer}")
+			mut temp_array := btree.childrens
+			temp_array << []int{}
+			btree.childrens = temp_array
 		}
 		btree.childrens[btree.node_pointer] << btree.all_tags.len - 1
 		for btree.parents.len < btree.all_tags.len {
-			btree.parents << 0
+			mut temp_array := btree.parents
+			temp_array << 0
+			btree.parents = temp_array
 		}
 		btree.parents[btree.all_tags.len - 1] = btree.node_pointer
 	}
@@ -77,7 +81,7 @@ fn (btree BTree) get_stored() Tag {
 	return btree.all_tags[btree.node_pointer]
 }
 
-fn (btree mut BTree) move_pointer(to int) {
+fn (mut btree BTree) move_pointer(to int) {
 	if to < btree.all_tags.len {
 		btree.node_pointer = to
 	}
