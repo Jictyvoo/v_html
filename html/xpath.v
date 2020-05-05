@@ -64,12 +64,14 @@ fn classify_identifier(value string) SearchType {
 }
 
 fn (xpath mut XPath) add_search(lexeme string, search_type int) {
-	search_enum := match search_type {
-		1 { SearchType.absolute_path }
-		else { SearchType.all_document }
+	if lexeme.len > 0 {
+		search_enum := match search_type {
+			1 { SearchType.absolute_path }
+			else { SearchType.all_document }
+		}
+		xpath.search_order << Token{lexeme: "/", class: search_enum}
+		xpath.search_order << Token{lexeme: lexeme, class: classify_identifier(lexeme)}
 	}
-	xpath.search_order << Token{lexeme: "/", class: search_enum}
-	xpath.search_order << Token{lexeme: lexeme, class: classify_identifier(lexeme)}
 }
 
 fn (xpath mut XPath) how_search(queue string) {
@@ -85,9 +87,9 @@ fn (xpath mut XPath) how_search(queue string) {
 		/* 47 - '/'  91 - '['  32 - ' ' */
 		} else if word != 47 && word != 91 && word != 32 {
 			lexeme += word.str()
-		} else {
+		} else if word != 32 {
 			if word == 91 { opened_has = true }
-			else if lexeme.len > 0 && search_type >= 0 && search_type <= 2 {
+			if lexeme.len > 0 && search_type >= 0 && search_type <= 2 {
 				xpath.add_search(lexeme, search_type)
 				search_type = 0
 			}

@@ -28,8 +28,6 @@ fn main() {
 	parser.parse_html('github_test.html', true)
 	mut dom := parser.get_dom()
 	dom.get_by_attribute_value('id', 'name_0')
-	/*
 	mut xpath := parser.get_xpath()
-        println(xpath.search("/catalog/cd/price"))
-	*/
+	println(xpath.search('/catalog/cd/price[last = 0]'))
 }
