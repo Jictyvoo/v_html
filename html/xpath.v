@@ -39,7 +39,7 @@ pub fn (token Token) str() string {
 pub struct XPath {
 mut:
 	dom          DocumentObjectModel
-	found_tags   []Tag
+	found_tags   []&Tag
 	search_order []Token
 }
 
@@ -131,9 +131,9 @@ fn (xpath XPath) search_childrens(name string, class SearchType) {
 	println('Searching for childrens with name $name')
 }
 
-pub fn (mut xpath XPath) search(queue string) []Tag {
+pub fn (mut xpath XPath) search(queue string) []&Tag {
 	xpath.how_search(queue)
-	xpath.found_tags = []Tag{}
+	xpath.found_tags = []&Tag{}
 	if xpath.search_order.len >= 2 {
 		if xpath.search_order[0].class == .all_document {
 			if xpath.search_order[1].class == .unknown {

@@ -29,5 +29,8 @@ fn main() {
 	mut dom := parser.get_dom()
 	dom.get_by_attribute_value('id', 'name_0')
 	mut xpath := parser.get_xpath()
-	println(xpath.search('/catalog/cd/price[last = 0]'))
+	found_search := xpath.search('/catalog/cd/price[last = 0]')
+	for found in found_search {
+		println(found)
+	}
 }

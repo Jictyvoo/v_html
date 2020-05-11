@@ -4,15 +4,15 @@ import os
 
 pub struct DocumentObjectModel {
 mut:
-	root           Tag
+	root           &Tag
 	constructed    bool = false
 	btree          BTree
-	all_tags       []Tag
-	all_attributes map[string][]Tag
+	all_tags       []&Tag
+	all_attributes map[string][]&Tag
 	close_tags     map[string]bool
 	attributes     map[string][]string
-	tag_attributes map[string][][]Tag
-	tag_type       map[string][]Tag
+	tag_attributes map[string][][]&Tag
+	tag_type       map[string][]&Tag
 	debug_file     os.File
 }
 
@@ -25,13 +25,13 @@ fn (mut dom DocumentObjectModel) print_debug(data string) {
 }
 
 /*
-fn (dom mut DocumentObjectModel) new_root(tag Tag) {
-	mut new_tag := Tag{} new_tag.name = "div"
+fn (dom mut DocumentObjectModel) new_root(tag &Tag) {
+	mut new_tag := &Tag{} new_tag.name = "div"
 	new_tag.add_child(dom.root) new_tag.add_child(tag)
 	dom.root = new_tag
 }
 */
-fn is_close_tag(tag Tag) bool {
+fn is_close_tag(tag &Tag) bool {
 	if tag.name.len > 0 {
 		return tag.name[0] == 47 // return if equals to /
 	}
@@ -56,7 +56,7 @@ fn (mut dom DocumentObjectModel) where_is(item_name, attribute_name string) int 
 	return string_array.len - 1
 }
 
-fn (mut dom DocumentObjectModel) add_tag_attribute(tag Tag) {
+fn (mut dom DocumentObjectModel) add_tag_attribute(tag &Tag) {
 	for attribute_name in tag.attributes.keys() {
 		attribute_value := tag.attributes[attribute_name]
 		location := dom.where_is(attribute_value, attribute_name)
@@ -65,7 +65,7 @@ fn (mut dom DocumentObjectModel) add_tag_attribute(tag Tag) {
 		}
 		for {
 			mut temp_array := dom.tag_attributes[attribute_name]
-			temp_array << []Tag{}
+			temp_array << []&Tag{}
 			dom.tag_attributes[attribute_name] = temp_array
 			if location < dom.tag_attributes[attribute_name].len + 1 {
 				break
@@ -77,7 +77,7 @@ fn (mut dom DocumentObjectModel) add_tag_attribute(tag Tag) {
 	}
 }
 
-fn (mut dom DocumentObjectModel) add_tag_by_type(tag Tag) {
+fn (mut dom DocumentObjectModel) add_tag_by_type(tag &Tag) {
 	tag_name := tag.name
 	if !(tag_name in dom.tag_type) {
 		dom.tag_type[tag_name] = [tag]
@@ -88,7 +88,7 @@ fn (mut dom DocumentObjectModel) add_tag_by_type(tag Tag) {
 	}
 }
 
-fn (mut dom DocumentObjectModel) add_tag_by_attribute(tag Tag) {
+fn (mut dom DocumentObjectModel) add_tag_by_attribute(tag &Tag) {
 	for attribute_name in tag.attributes.keys() {
 		if !(attribute_name in dom.all_attributes) {
 			dom.all_attributes[attribute_name] = [tag]
@@ -112,7 +112,7 @@ fn compare_string(a, b string) bool { // for some reason == doesn't work
 	return true
 }
 
-fn (mut dom DocumentObjectModel) construct(tag_list []Tag) {
+fn (mut dom DocumentObjectModel) construct(tag_list []&Tag) {
 	dom.constructed = true
 	mut temp_map := map[string]int{}
 	mut temp_int := C.INT_MIN
@@ -170,33 +170,33 @@ fn (mut dom DocumentObjectModel) construct(tag_list []Tag) {
 	} // println(tag_list[root_index]) for debug purposes
 }
 
-pub fn (mut dom DocumentObjectModel) get_by_attribute_value(name, value string) []Tag {
+pub fn (mut dom DocumentObjectModel) get_by_attribute_value(name, value string) []&Tag {
 	location := dom.where_is(value, name)
 	if dom.tag_attributes[name].len > location {
 		return dom.tag_attributes[name][location]
 	}
-	return []Tag{}
+	return []&Tag{}
 }
 
-pub fn (dom DocumentObjectModel) get_by_tag(name string) []Tag {
+pub fn (dom DocumentObjectModel) get_by_tag(name string) []&Tag {
 	if name in dom.tag_type {
 		return dom.tag_type[name]
 	}
-	return []Tag{}
+	return []&Tag{}
 }
 
-pub fn (dom DocumentObjectModel) get_by_attribute(name string) []Tag {
+pub fn (dom DocumentObjectModel) get_by_attribute(name string) []&Tag {
 	if name in dom.all_attributes {
 		return dom.all_attributes[name]
 	}
-	return []Tag{}
+	return []&Tag{}
 }
 
-pub fn (dom DocumentObjectModel) get_root() Tag {
+pub fn (dom DocumentObjectModel) get_root() &Tag {
 	return dom.root
 }
 
-pub fn (dom DocumentObjectModel) get_all_tags() []Tag {
+pub fn (dom DocumentObjectModel) get_all_tags() []&Tag {
 	return dom.all_tags
 }
 
