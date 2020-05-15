@@ -1,6 +1,6 @@
 module html
 
-struct Tag {
+pub struct Tag {
 mut:
 	name           string = ""
 	attributes     map[string]string // attributes will be like map[name]value
