@@ -16,7 +16,7 @@ fn (mut tag Tag) add_child(t &Tag) {
 	tag.children = children
 }
 
-pub fn (tag Tag) get_children() []&Tag {
+pub fn (tag Tag) get_children() []Tag_ptr {
 	return tag.children
 }
 
@@ -40,11 +40,9 @@ pub fn (tag Tag) str() string {
 	}
 	to_return += '${tag.content}'
 	if tag.children.len > 0 {
-		println('${tag.name} have ${tag.children.len} childrens')
-		mut counter := 0
-		for child in tag.children {
-			counter++
-			println('${child.name} ${counter}')
+		// println('${tag.name} have ${tag.children.len} childrens')
+		for index := 0; index < tag.children.len; index++ {
+			to_return += tag.get_children()[index].str()
 		}
 	}
 	if !tag.closed {
