@@ -156,8 +156,12 @@ fn (mut dom DocumentObjectModel) construct(tag_list []&Tag) {
 			if !stack.is_null(temp_int) {
 				dom.btree.move_pointer(temp_map[temp_int.str()])
 				temp_map[index.str()] = dom.btree.add_children(tag)
-				dom.print_debug("Added ${tag.name} as child of '" + tag_list[temp_int].name +
-					"' which now has ${dom.btree.get_children().len} childrens")
+				mut temp_tag := tag_list[temp_int]
+				temp_tag.add_child(tag)//tag_list[temp_int] = temp_tag
+				/*dom.print_debug("Added ${tag.name} as child of '" + tag_list[temp_int].name +
+					"' which now has ${dom.btree.get_children().len} childrens")*/
+				dom.print_debug("Added ${tag.name} as child of '" + temp_tag.name +
+					"' which now has ${temp_tag.get_children().len} childrens")
 			} else { // dom.new_root(tag)
 				stack.push(root_index)
 			}
@@ -168,6 +172,7 @@ fn (mut dom DocumentObjectModel) construct(tag_list []&Tag) {
 			}
 		}
 	} // println(tag_list[root_index]) for debug purposes
+	dom.root = tag_list[0]
 }
 
 pub fn (mut dom DocumentObjectModel) get_by_attribute_value(name, value string) []&Tag {
