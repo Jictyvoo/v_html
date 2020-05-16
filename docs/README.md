@@ -61,43 +61,34 @@ A: Is a workaround, because to make it to be finish fast, use this method, to no
 
 A: Like XPath yes. Exactly equal to it, no.
 
-## To-do
+## Roadmap
+- [x] Parser
+  - [x] `<!-- Comments -->` detection
+  - [x] `Open Generic tags` detection
+  - [x] `Close Generic tags` detection
+  - [x] `verify string` detection
+  - [x] `tag attributes` detection
+  - [x] `attributes values` detection
+  - [x] `tag text` (on tag it is declared as content, maybe change for text in the future)
+  - [x] `text file for parse` support (open local files for parsing)
+  - [x] `open_code` verification
+  - [ ] fix parser with github html (have some weird things, dom is incorrect while removing things from it)
+- [x] DocumentObjectModel
+  - [x] push elements that have a close tag into stack
+  - [x] remove elements from stack
+  - [ ] add in btree info about who's the parent of the current node
+  - [x] ~~create a new document root if have some syntax error (deleted)~~
+  - [x] search tags in `DOM` by attributes
+  - [x] search tags in `DOM` by tag type
+  - [x] finish dom test
+- [x] XPath
+  - [ ] receive search string and identify what to search and when
+  - [x] start search by root
+  - [x] start search by tag name
+  - [x] start search by attribute name
+  - [x] get all tags from document
+- [ ] Finish XPath search
+- [ ] Maybe more
 
-* Finish XPath search
-* Maybe more
-
-### Need verification
-
-* Add in btree info about who's the parent of the current node
-* Fix parser with github html (have some weird things, dom is incorrect while removing things from it)
-
-## Done
-
-### Parser
-
-* Comments
-* Open Generic tags
-* Close Generic tags
-* verify string
-* tag attributes
-* attributes values
-* tag text (on tag it is declared as content, maybe change for text in the future)
-* text file for parse
-* open_code verification
-
-### DocumentObjectModel
-
-* push elements that have a close tag into stack
-* remove elements from stack
-* create a new document root if have some syntax error (deleted)
-* search tags in B-tree by attributes
-* search tags in B-tree by tag type
-* finish dom test
-
-### XPath
-
-* receive search string and identify what to search and when
-* start search by root
-* start search by tag name
-* start search by attribute name
-* get all tags from document
+## License
+[GPL3](LICENSE)

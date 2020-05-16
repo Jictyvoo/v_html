@@ -26,9 +26,9 @@ fn main() {
 	}
 	parser.add_code_tag('')
 	parser.parse_html('github_test.html', true)
-	mut dom := parser.get_dom()
+	/*mut dom := parser.get_dom()
 	mut result := dom.get_by_attribute_value('class', 'select-menu-item width-full')
-	/*for index := 0; index < result.len; index++ {
+	for index := 0; index < result.len; index++ {
 		println(result[index])
 	}
 	result = dom.get_by_tag('form')

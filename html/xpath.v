@@ -36,6 +36,10 @@ pub fn (token Token) str() string {
 	return '${token.lexeme}: ${token.class}'
 }
 
+pub fn (token Token) eq(to_compare Token) bool {
+	return (token.lexeme == to_compare.lexeme) && (token.class == to_compare.class)
+}
+
 pub struct XPath {
 mut:
 	dom          DocumentObjectModel
@@ -131,7 +135,7 @@ fn (xpath XPath) search_childrens(name string, class SearchType) {
 	println('Searching for childrens with name $name')
 }
 
-pub fn (mut xpath XPath) search(queue string) []&Tag {
+pub fn (mut xpath XPath) search(queue string) []Tag_ptr {
 	xpath.how_search(queue)
 	xpath.found_tags = []&Tag{}
 	if xpath.search_order.len >= 2 {

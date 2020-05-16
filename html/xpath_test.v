@@ -13,6 +13,24 @@ fn create_xpath() XPath {
 	return xpath
 }
 
+fn assert_search_order(queue string, expected []Token) {
+	xpath := create_xpath()
+	xpath.how_search(queue)
+	for index := 0; index < xpath.search_order.len; index++ {
+		assert xpath.search_order[index].eq(expected[index])
+	}
+}
+
+fn test_search_order() {
+	xpath := create_xpath()
+	mut result := xpath.search('//cd') //testing entire_document
+	
+	result = xpath.search('/catalog/cd/price') //testing subelement
+	result = xpath.search('/catalog/cd/*') //testing unknown
+	result = xpath.search('/catalog/*/price') //testing unknown_parent
+	result = xpath.search('/catalog/cd/price[last = 0]') //testing entire_document
+}
+
 fn test_entire_document_search() {
 	xpath := create_xpath()
 	xpath.search('//cd')
