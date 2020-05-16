@@ -1,12 +1,23 @@
 module html
 
-struct Tag {
+pub struct Tag {
 mut:
 	name           string = ""
 	attributes     map[string]string // attributes will be like map[name]value
 	last_attribute string = ""
 	content        string = ""
+	children       []&Tag
 	closed         bool = false
+}
+
+fn (mut tag Tag) add_child(t &Tag) {
+	mut children := tag.children
+	children << t
+	tag.children = children
+}
+
+pub fn (tag Tag) get_children() []Tag_ptr {
+	return tag.children
 }
 
 pub fn (tag Tag) get_content() string {
@@ -28,6 +39,12 @@ pub fn (tag Tag) str() string {
 		'>'
 	}
 	to_return += '${tag.content}'
+	if tag.children.len > 0 {
+		// println('${tag.name} have ${tag.children.len} childrens')
+		for index := 0; index < tag.children.len; index++ {
+			to_return += tag.get_children()[index].str()
+		}
+	}
 	if !tag.closed {
 		to_return += '</${tag.name}>'
 	}

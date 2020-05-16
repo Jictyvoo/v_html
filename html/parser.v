@@ -4,7 +4,7 @@ import os
 
 struct LexycalAttributes {
 mut:
-	current_tag      Tag
+	current_tag      &Tag
 	open_tag         bool = false
 	open_code        bool = false
 	open_string      int = 0
@@ -25,10 +25,10 @@ fn (mut lxa LexycalAttributes) write_lexeme(data string) {
 pub struct Parser {
 mut:
 	dom                DocumentObjectModel
-	lexycal_attributes LexycalAttributes = LexycalAttributes{}
+	lexycal_attributes LexycalAttributes = LexycalAttributes{current_tag: &Tag{}}
 	filename           string = "direct-parse"
 	initialized        bool = false
-	tags               []Tag
+	tags               []&Tag
 	debug_file         os.File
 }
 
@@ -98,10 +98,11 @@ fn blank_string(data string) bool {
 fn (mut parser Parser) initialize_all() {
 	parser.dom = DocumentObjectModel{
 		debug_file: parser.debug_file
+		root: &Tag{}
 	}
 	parser.add_code_tag('')
 	parser.dom.close_tags['/!document'] = true
-	parser.lexycal_attributes.current_tag = Tag{}
+	parser.lexycal_attributes.current_tag = &Tag{}
 	parser.initialized = true
 }
 
@@ -111,7 +112,7 @@ fn (mut parser Parser) generate_tag() {
 			0 {
 			parser.tags << parser.lexycal_attributes.current_tag
 		}
-		parser.lexycal_attributes.current_tag = Tag{}
+		parser.lexycal_attributes.current_tag = &Tag{}
 	}
 }
 
@@ -221,7 +222,7 @@ pub fn (mut parser Parser) split_parse(data string) {
 			if parser.lexycal_attributes.lexeme_builder.len >= 1 {
 				if parser.lexycal_attributes.current_tag.name.len > 1 && parser.lexycal_attributes.current_tag.name[0] ==
 					47 && !blank_string(temp_string) {
-					parser.tags << Tag{
+					parser.tags << &Tag{
 						name: 'text'
 						content: temp_string
 					}
@@ -265,7 +266,7 @@ pub fn (mut parser Parser) finalize() {
 	parser.generate_tag()
 }
 
-pub fn (parser Parser) get_tags() []Tag {
+pub fn (parser Parser) get_tags() []&Tag {
 	return parser.tags
 }
 
