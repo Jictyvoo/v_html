@@ -107,6 +107,7 @@ fn (mut parser Parser) initialize_all() {
 		root: &Tag{}
 	}
 	parser.add_code_tag('')
+	parser.tags = []&Tag{}
 	parser.dom.close_tags['/!document'] = true
 	parser.lexycal_attributes.current_tag = &Tag{}
 	parser.initialized = true

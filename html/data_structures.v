@@ -53,7 +53,7 @@ fn (mut btree BTree) add_children(tag Tag) int {
 	btree.all_tags << tag
 	if btree.all_tags.len > 1 {
 		for btree.childrens.len <= btree.node_pointer {
-			//println("${btree.childrens.len} <= ${btree.node_pointer}")
+			// println("${btree.childrens.len} <= ${btree.node_pointer}")
 			mut temp_array := btree.childrens
 			temp_array << []int{}
 			btree.childrens = temp_array

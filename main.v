@@ -3,6 +3,7 @@ module main
 // import net.http
 import os
 import html
+import benchmark
 
 /*
 #flag -O3
@@ -25,7 +26,11 @@ fn main() {
 		debug_file: d_file
 	}
 	parser.add_code_tag('')
+	mut b := benchmark.start()
 	parser.parse_html('github_test.html', true)
+	b.measure('parse file')
+	parser.get_dom()
+	b.measure('generate dom')
 	/*mut dom := parser.get_dom()
 	mut result := dom.get_by_attribute_value('class', 'select-menu-item width-full')
 	for index := 0; index < result.len; index++ {
