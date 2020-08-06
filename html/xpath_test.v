@@ -17,18 +17,103 @@ fn assert_search_order(queue string, expected []Token) {
 	xpath := create_xpath()
 	xpath.how_search(queue)
 	for index := 0; index < xpath.search_order.len; index++ {
-		assert xpath.search_order[index].eq(expected[index])
+		if !xpath.search_order[index].eq(expected[index]) {
+			return false
+		}
 	}
+	return true
 }
 
 fn test_search_order() {
-	xpath := create_xpath()
-	mut result := xpath.search('//cd') //testing entire_document
-	
-	result = xpath.search('/catalog/cd/price') //testing subelement
-	result = xpath.search('/catalog/cd/*') //testing unknown
-	result = xpath.search('/catalog/*/price') //testing unknown_parent
-	result = xpath.search('/catalog/cd/price[last = 0]') //testing entire_document
+	mut is_equal := assert_search_order('//cd', [
+		Token{
+			lexeme: '//'
+			class: SearchType.all_document
+		}, Token{
+			lexeme: 'cd'
+			class: SearchType.element
+		}]) // all_document search
+	assert is_equal == true
+	is_equal = assert_search_order('/catalog/cd/price', [
+		Token{
+			lexeme: '/'
+			class: SearchType.absolute_path
+		},
+		Token{
+			lexeme: 'catalog'
+			class: SearchType.element
+		},
+		Token{
+			lexeme: '/'
+			class: SearchType.absolute_path
+		},
+		Token{
+			lexeme: 'cd'
+			class: SearchType.element
+		},
+		Token{
+			lexeme: '/'
+			class: SearchType.absolute_path
+		},
+		Token{
+			lexeme: 'price'
+			class: SearchType.element
+		},
+	]) // testing subelement
+	assert is_equal == true
+	is_equal = assert_search_order('/catalog/cd/*', [
+		Token{
+			lexeme: '/'
+			class: SearchType.absolute_path
+		},
+		Token{
+			lexeme: 'catalog'
+			class: SearchType.element
+		},
+		Token{
+			lexeme: '/'
+			class: SearchType.absolute_path
+		},
+		Token{
+			lexeme: 'cd'
+			class: SearchType.element
+		},
+		Token{
+			lexeme: '*'
+			class: SearchType.unknown
+		},
+	]) // testing unknown
+	assert is_equal == true
+	is_equal = assert_search_order('/catalog/*/price', [
+		Token{
+			lexeme: '/'
+			class: SearchType.absolute_path
+		}, Token{
+			lexeme: 'catalog'
+			class: SearchType.element
+		}, Token{
+			lexeme: '/'
+			class: SearchType.absolute_path
+		}, Token{
+			lexeme: '*'
+			class: SearchType.unknown
+		}, Token{
+			lexeme: '/'
+			class: SearchType.absolute_path
+		}, Token{
+			lexeme: 'price'
+			class: SearchType.element
+		}]) // testing unknown_parent
+	assert is_equal == true
+	is_equal = assert_search_order('/cd[last = 0]', [
+		Token{
+			lexeme: '/'
+			class: SearchType.absolute_path
+		}, Token{
+			lexeme: 'cd'
+			class: SearchType.element
+		}]) // testing entire_document
+	assert is_equal == true
 }
 
 fn test_entire_document_search() {

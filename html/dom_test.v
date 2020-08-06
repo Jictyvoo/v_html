@@ -4,7 +4,7 @@ fn generate_temp_html() string {
 	mut temp_html := '<!doctype html><html><head><title>Giant String</title></head><body>'
 	for counter := 0; counter < 4; counter++ {
 		temp_html += "<div id='name_$counter' "
-		temp_html += "class='several-${counter}'>Look at ${counter}</div>"
+		temp_html += "class='several-$counter'>Look at $counter</div>"
 	}
 	temp_html += '</body></html>'
 	return temp_html
@@ -30,6 +30,16 @@ fn test_search_by_attribute_value() {
 	print('Amount ')
 	println(dom.get_by_attribute_value('id', 'name_0'))
 	assert dom.get_by_attribute_value('id', 'name_0').len == 1
+}
+
+fn test_access_parent() {
+	mut dom := generate_dom(generate_temp_html())
+	div_tags := dom.get_by_tag('div')[0]
+	assert div_tags.get_parent() != C.NULL
+	parent := div_tags.get_parent()
+	for div_tag in div_tags {
+		assert div_tag.get_parent() == parent
+	}
 }
 
 fn test_search_by_attributes() {

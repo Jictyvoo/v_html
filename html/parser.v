@@ -10,10 +10,13 @@ mut:
 	open_string      int = 0
 	open_comment     bool = false
 	is_attribute     bool = false
-	opened_code_type string = ""
+	opened_code_type string = ''
 	line_count       int = 0
 	lexeme_builder   string
-	code_tags        map[string]bool = {'script': true,'style': true}
+	code_tags        map[string]bool = {
+		'script': true
+		'style': true
+	}
 }
 
 fn (mut lxa LexycalAttributes) write_lexeme(data string) {
@@ -25,8 +28,10 @@ fn (mut lxa LexycalAttributes) write_lexeme(data string) {
 pub struct Parser {
 mut:
 	dom                DocumentObjectModel
-	lexycal_attributes LexycalAttributes = LexycalAttributes{current_tag: &Tag{}}
-	filename           string = "direct-parse"
+	lexycal_attributes LexycalAttributes = LexycalAttributes{
+		current_tag: &Tag{}
+	}
+	filename           string = 'direct-parse'
 	initialized        bool = false
 	tags               []&Tag
 	debug_file         os.File
@@ -47,6 +52,7 @@ fn (parser Parser) builder_str() string {
 	return parser.lexycal_attributes.lexeme_builder.to_lower()
 }
 
+[if debug]
 fn (mut parser Parser) print_debug(data string) {
 	$if debug {
 		if data.len > 0 {
@@ -108,8 +114,8 @@ fn (mut parser Parser) initialize_all() {
 
 fn (mut parser Parser) generate_tag() {
 	if !parser.lexycal_attributes.open_tag {
-		if parser.lexycal_attributes.current_tag.name.len > 0 || parser.lexycal_attributes.current_tag.content.len >
-			0 {
+		if parser.lexycal_attributes.current_tag.name.len > 0 ||
+			parser.lexycal_attributes.current_tag.content.len > 0 {
 			parser.tags << parser.lexycal_attributes.current_tag
 		}
 		parser.lexycal_attributes.current_tag = &Tag{}
@@ -198,7 +204,8 @@ pub fn (mut parser Parser) split_parse(data string) {
 				if parser.lexycal_attributes.current_tag.name in parser.lexycal_attributes.code_tags {
 					parser.lexycal_attributes.open_code = true
 					parser.lexycal_attributes.opened_code_type = parser.lexycal_attributes.current_tag.name
-				} // parser.print_debug(parser.lexycal_attributes.current_tag.name)
+				}
+				// parser.print_debug(parser.lexycal_attributes.current_tag.name)
 			} else if word != 9 && word != 32 && word != 61 && word != 10 { // Tab, space, = and \n
 				parser.lexycal_attributes.write_lexeme(word.str())
 			} else if word != 10 {
@@ -220,8 +227,8 @@ pub fn (mut parser Parser) split_parse(data string) {
 		} else if word == 60 { // open tag '<'
 			temp_string := parser.builder_str()
 			if parser.lexycal_attributes.lexeme_builder.len >= 1 {
-				if parser.lexycal_attributes.current_tag.name.len > 1 && parser.lexycal_attributes.current_tag.name[0] ==
-					47 && !blank_string(temp_string) {
+				if parser.lexycal_attributes.current_tag.name.len > 1 &&
+					parser.lexycal_attributes.current_tag.name[0] == 47 && !blank_string(temp_string) {
 					parser.tags << &Tag{
 						name: 'text'
 						content: temp_string
@@ -229,7 +236,8 @@ pub fn (mut parser Parser) split_parse(data string) {
 				} else {
 					parser.lexycal_attributes.current_tag.content = temp_string // verify later who has this content
 				}
-			} // parser.print_debug(parser.lexycal_attributes.current_tag.str())
+			}
+			// parser.print_debug(parser.lexycal_attributes.current_tag.str())
 			parser.lexycal_attributes.lexeme_builder = ''
 			parser.generate_tag()
 			parser.lexycal_attributes.open_tag = true
@@ -266,7 +274,7 @@ pub fn (mut parser Parser) finalize() {
 	parser.generate_tag()
 }
 
-pub fn (parser Parser) get_tags() []&Tag {
+pub fn (parser Parser) get_tags() []Tag_ptr {
 	return parser.tags
 }
 

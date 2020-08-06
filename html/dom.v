@@ -9,13 +9,14 @@ mut:
 	btree          BTree
 	all_tags       []&Tag
 	all_attributes map[string][]&Tag
-	close_tags     map[string]bool
+	close_tags     map[string]bool // add a counter to see count how many times is closed and parse correctly
 	attributes     map[string][]string
 	tag_attributes map[string][][]&Tag
 	tag_type       map[string][]&Tag
 	debug_file     os.File
 }
 
+[if debug]
 fn (mut dom DocumentObjectModel) print_debug(data string) {
 	$if debug {
 		if data.len > 0 {
@@ -112,7 +113,7 @@ fn compare_string(a, b string) bool { // for some reason == doesn't work
 	return true
 }
 
-fn (mut dom DocumentObjectModel) construct(tag_list []&Tag) {
+fn (mut dom DocumentObjectModel) construct(tag_list []Tag_ptr) {
 	dom.constructed = true
 	mut temp_map := map[string]int{}
 	mut temp_int := C.INT_MIN
@@ -125,15 +126,15 @@ fn (mut dom DocumentObjectModel) construct(tag_list []&Tag) {
 	stack.push(0)
 	root_index := 0
 	for index := 1; index < tag_list.len; index++ {
-		tag := tag_list[index]
+		mut tag := tag_list[index]
 		dom.print_debug(tag.str())
 		if is_close_tag(tag) {
 			temp_int = stack.peek()
 			temp_string = tag.name[1..tag.name.len] // print(temp_string + " != " + tag_list[temp_int].name + " >> ") // println(temp_string != tag_list[temp_int].name)
-			for !stack.is_null(temp_int) && !compare_string(temp_string, tag_list[temp_int].name) &&
-				!tag_list[temp_int].closed {
-				dom.print_debug(temp_string + ' >> ' + tag_list[temp_int].name + ' ' + compare_string(temp_string,
-					tag_list[temp_int].name).str())
+			for !stack.is_null(temp_int) &&
+				!compare_string(temp_string, tag_list[temp_int].name) && !tag_list[temp_int].closed {
+				dom.print_debug(temp_string + ' >> ' + tag_list[temp_int].name + ' ' +
+					compare_string(temp_string, tag_list[temp_int].name).str())
 				stack.pop()
 				temp_int = stack.peek()
 			}
@@ -148,7 +149,7 @@ fn (mut dom DocumentObjectModel) construct(tag_list []&Tag) {
 			}
 			dom.print_debug('Removed ' + temp_string + ' -- ' + tag_list[temp_int].name)
 		} else if tag.name.len > 0 {
-			dom.add_tag_attribute(tag) //error here
+			dom.add_tag_attribute(tag) // error here
 			dom.add_tag_by_attribute(tag)
 			dom.add_tag_by_type(tag)
 			dom.all_tags << tag
@@ -157,11 +158,14 @@ fn (mut dom DocumentObjectModel) construct(tag_list []&Tag) {
 				dom.btree.move_pointer(temp_map[temp_int.str()])
 				temp_map[index.str()] = dom.btree.add_children(tag)
 				mut temp_tag := tag_list[temp_int]
-				temp_tag.add_child(tag)//tag_list[temp_int] = temp_tag
-				/*dom.print_debug("Added ${tag.name} as child of '" + tag_list[temp_int].name +
-					"' which now has ${dom.btree.get_children().len} childrens")*/
-				dom.print_debug("Added ${tag.name} as child of '" + temp_tag.name +
-					"' which now has ${temp_tag.get_children().len} childrens")
+				position_in_parent := temp_tag.add_child(tag) // tag_list[temp_int] = temp_tag
+				tag.add_parent(temp_tag, position_in_parent)
+				/*
+				dom.print_debug("Added ${tag.name} as child of '" + tag_list[temp_int].name +
+					"' which now has ${dom.btree.get_children().len} childrens")
+				*/
+				dom.print_debug("Added $tag.name as child of '" + temp_tag.name +
+					"' which now has $temp_tag.get_children().len childrens")
 			} else { // dom.new_root(tag)
 				stack.push(root_index)
 			}
@@ -175,7 +179,7 @@ fn (mut dom DocumentObjectModel) construct(tag_list []&Tag) {
 	dom.root = tag_list[0]
 }
 
-pub fn (mut dom DocumentObjectModel) get_by_attribute_value(name, value string) []&Tag {
+pub fn (mut dom DocumentObjectModel) get_by_attribute_value(name, value string) []Tag_ptr {
 	location := dom.where_is(value, name)
 	if dom.tag_attributes[name].len > location {
 		return dom.tag_attributes[name][location]
@@ -183,14 +187,14 @@ pub fn (mut dom DocumentObjectModel) get_by_attribute_value(name, value string) 
 	return []&Tag{}
 }
 
-pub fn (dom DocumentObjectModel) get_by_tag(name string) []&Tag {
+pub fn (dom DocumentObjectModel) get_by_tag(name string) []Tag_ptr {
 	if name in dom.tag_type {
 		return dom.tag_type[name]
 	}
 	return []&Tag{}
 }
 
-pub fn (dom DocumentObjectModel) get_by_attribute(name string) []&Tag {
+pub fn (dom DocumentObjectModel) get_by_attribute(name string) []Tag_ptr {
 	if name in dom.all_attributes {
 		return dom.all_attributes[name]
 	}
@@ -201,7 +205,7 @@ pub fn (dom DocumentObjectModel) get_root() &Tag {
 	return dom.root
 }
 
-pub fn (dom DocumentObjectModel) get_all_tags() []&Tag {
+pub fn (dom DocumentObjectModel) get_all_tags() []Tag_ptr {
 	return dom.all_tags
 }
 
