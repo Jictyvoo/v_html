@@ -9,6 +9,7 @@
 *.html
 *.log
 *fns.txt
+debug.profile
 
 # Ignored generated files for test
 

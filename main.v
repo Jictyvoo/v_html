@@ -29,17 +29,13 @@ fn main() {
 	mut b := benchmark.start()
 	parser.parse_html('github_test.html', true)
 	b.measure('parse file')
-	parser.get_dom()
+	/*mut dom := */parser.get_dom()
 	b.measure('generate dom')
-	/*mut dom := parser.get_dom()
-	mut result := dom.get_by_attribute_value('class', 'select-menu-item width-full')
-	for index := 0; index < result.len; index++ {
-		println(result[index])
-	}
-	result = dom.get_by_tag('form')
-	for index := 0; index < result.len; index++ {
-		println(result[index])
+	/*for s_tag in dom.get_by_tag("script") {
+		println(s_tag)
 	}*/
+	//println(dom.get_by_attribute_value("id", "doenca_abc")[0].text())
+	
 	mut xpath := parser.get_xpath()
 	found_search := xpath.search('/catalog/cd/price[last = 0]')
 	for found in found_search {

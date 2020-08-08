@@ -58,6 +58,28 @@ This function returns a xpath based on it internal tree
 #### search(queue string) []Tag
 returns a tag array based on queue string given to function (it searchs the elements in dom and it's btree)
 
+### Tag
+
+An object that holds tags information, such as `name`, `attributes`, `children`
+
+#### get_children() []Tag_ptr
+Returns all children as an array
+
+#### get_parent() &Tag
+Returns the parent of current tag
+
+### get_name() string
+Returns tag name
+
+### get_content() string
+Returns tag content
+
+### get_attributes() map[string]string
+Returns all attributes and it value
+
+### text() string
+Returns the content of the tag and all tags inside it. Also, any `<br>` tag will be converted into `\n`
+
 ## Some questions that can appear
 
 ### Q: Why in parser have a `builder_str() string` method that returns only the lexeme string?
@@ -108,6 +130,9 @@ A: Like XPath yes. Exactly equal to it, no.
   - [x] get all tags from document
 - [ ] Finish XPath search
 - [ ] Maybe more
+
+## Running
+* Profile - ```shell sudo v -profile debug.profile -o main.out . && ./main.out ```
 
 ## License
 [GPL3](LICENSE)
