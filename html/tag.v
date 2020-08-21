@@ -52,7 +52,7 @@ pub fn (tag Tag) get_attributes() map[string]string {
 }
 
 pub fn (tag Tag) text() string {
-	if tag.name.len >= 2 && tag.name[0..2] == 'br' {
+	if tag.name.len >= 2 && tag.name == 'br' {
 		return '\n'
 	}
 	mut to_return := tag.content.replace('\n', '')
